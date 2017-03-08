@@ -1,0 +1,20 @@
+{
+  "name": "mymvvm",
+  "version": "1.0.0",
+  "description": "a plugin which is for sohu home page",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dxj",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^0.26.1",
+    "extract-text-webpack-plugin": "^2.0.0-rc.3",
+    "style-loader": "^0.13.1",
+    "uglifyjs-webpack-plugin": "^0.2.1",
+    "url-loader": "^0.5.7",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.1"
+  }
+}
