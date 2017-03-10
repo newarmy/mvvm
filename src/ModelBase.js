@@ -6,10 +6,10 @@ var extend = require('./util/extend');
 var request = require('./util/request');
 var extendClass = require('./util/extendClass');
 var eventBase = require('./eventBase');
-function ModelBase (opt) {
+function ModelBase () {
 	//接收数据的属性
 	this.data = null;
-	this.url = opt.url || null;
+	this.url =  null;
 }
 extend(ModelBase.prototype, eventBase, {
 	 _ajax: function (opt) {
