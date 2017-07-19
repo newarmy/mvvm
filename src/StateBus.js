@@ -45,7 +45,7 @@ extend(stateBus.prototype, eventBase, {
 			var targetClassId = opt.classId ? opt.classId : k.classId;
 			var newOpt = {
 				type: state,
-				value: opt.payload,
+				payload: opt.payload,
 				classId: targetClassId//标示哪个state对象触发的事件
 			};
 			k.trigger(newOpt.type, newOpt);
