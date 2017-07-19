@@ -1,6 +1,6 @@
 
 /**
-* cookie
+* template
 */
 
 function template(str, obj) {

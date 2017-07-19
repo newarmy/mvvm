@@ -1,7 +1,7 @@
 //自定义事件机制
 module.exports = {
-	events: {},
 	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
 		thisArg = thisArg || this;
 		if(this.events[type]) {
 			this.events[type].push({cb: callback, thisArg: thisArg});

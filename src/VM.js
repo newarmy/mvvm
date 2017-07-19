@@ -11,11 +11,15 @@ function VM(opt) {
 	this.element = opt.element;
 	this.model = opt.model;
 	this.tpl = opt.tpl;
+	this.selfParam = opt.selfParam || null;
+	this.stateBus = opt.stateBus || null;
 	this.eventArr = [];//
 	this.isEventParsed = false;//是否解析完dom事件
+	this.prepareFunc();
 }
 
 extend(VM.prototype, eventBase, {
+	prepareFunc: function() {}, //初始操作，子类可以重写, 调用noModelInit方法或调用init方法
 	events: null,//{'click .tab': 'get'} 用来给dom元素注册事件(事件代理)
 	el: '',//更新数据的dom容器， 如果el没有设置，element就是更新数据的容器， el 为 element的子元素
     noModelInit: function() {//没有用到MODEL组件的时候，要需要调用noModelInit来解析自定义事件，
@@ -47,7 +51,7 @@ extend(VM.prototype, eventBase, {
 		}
 	},
 	error: function() {
-
+		
 	},
 	parseEvent: function() {
 		var k = this;
@@ -66,29 +70,30 @@ extend(VM.prototype, eventBase, {
 			eArr = k.eventArr[i];
 			l = eArr.length;
 			if(l == 2) {
-				k.element.on(eArr[0], function(e) {
-					k[eArr[1]].call(k, e);
-				});
+				(function(eArr){
+					k.element.on(eArr[0], function(e) {
+						k[eArr[1]].call(k, e);
+					});
+				}(eArr));
+				
 			} else {
-				k.element.on(eArr[0], eArr[1], function(e) {
-					k[eArr[2]].call(k, e);
-				});
+				(function(eArr){
+					k.element.on(eArr[0], eArr[1], function(e) {
+						var $t = $(this);
+						k[eArr[2]].call(k, e, $t);
+					});
+				}(eArr));
+				
 			}
 		}
 	},
 	removeEvents: function() {
 		var k = this, arr;
-		for(var i = 0, len = k.eventArr; i < len; i++) {
+		for(var i = 0, len = k.eventArr.length; i < len; i++) {
 			arr = k.eventArr[i];
 			k.element.off(arr[0]);
 		}
-	},
-	//组件用来广播数据，子类重写
-	broadCast: function() {
-	},
-	//组件用来接收数据，子类重写
-	receive: function(args) {
-
+        k.eventArr = [];
 	}
 });
 
