@@ -9,7 +9,8 @@ var eventBase = require('./eventBase');
 function ModelBase () {
 	//接收数据的属性
 	this.data = {};
-	this.url =  null;
+	//ajax请求参数对象。可以是一个请求参数对象，也可以是多个请求参数对象（多个值时为数组）
+	this.requestParam =  null;
 	this.requestCount = 0;
 	this.totalRequest = 0;
 	this.mainName = null;//主要数据属性名称
@@ -46,9 +47,17 @@ extend(ModelBase.prototype, eventBase, {
 		};
 		request(opt);
 	},
+	//设置请求参数，子类重写覆盖， VM对象中调用修改请求参数
+	setRequestParam: function(requestParam) {
+		var k = this;
+		k.requestParam = requestParam;
+	},
 	//请求接口
 	request: function (opt) {
 		var k = this;
+		if(!opt){
+			opt = k.requestParam;
+		}
 		var isArray = $.isArray(opt);
 		k.requestCount = 0;
 		k.data ={};
