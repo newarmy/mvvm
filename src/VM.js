@@ -6,6 +6,9 @@ var eventBase = require('./eventBase');
 var tplObj = require('./util/tplFunc');
 /**
 	opt说明：
+	tpl: 模板
+	model: 数据模型
+	selfParam:自定义属性，对象实例自己的属性
 */
 function VM(opt) {
 	this.element = opt.element;
