@@ -25,7 +25,7 @@ var cVM = VM.extend({
 var cv = new cVM({
 	element: $('.box'),
 	model: cm,
-	tpl: '<li>{{name}}</li>'
+	tpl: '<li><%=name%></li>'
 });
 
 cv.init();

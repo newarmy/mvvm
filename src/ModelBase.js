@@ -18,18 +18,18 @@ function ModelBase () {
 extend(ModelBase.prototype, eventBase, {
 	 _ajax: function (opt) {
 		var k = this;
-		var successFunc = opt.success;
-		var errorFunc = opt.error;
+		//var successFunc = opt.success;
+		//var errorFunc = opt.error;
 		opt.timeout = 10000;
 		opt.success = function(json, stateText, jqXHR, that) {
 			json = k.parse(json, that.name);
 			k.data[that.name] = json;
 			k.requestCount++;
-			if(k.requestCount == k.totalRequest) {
+			if(k.requestCount === k.totalRequest) {
 				k.trigger('getData', k.data);
-				if(successFunc) {
+				/*if(successFunc) {
 					successFunc(k.data);
-				}
+				}*/
 			}
 			
 			
@@ -37,17 +37,54 @@ extend(ModelBase.prototype, eventBase, {
 		//函数说明：传入jqXHR对象、描述状态的字符串”error”、错误信息
 		opt.error = function (jqXHR, textStatus, errorThrown, that) {
 			k.data = {};
-			if(errorFunc) {
+			/*if(errorFunc) {
 				errorFunc(jqXHR, textStatus, errorThrown);
-			}
-			if(that.name == k.mainName) {
+			}*/
+			if(that.name === k.mainName) {
 				k.trigger('error', textStatus);
 			}
 			
 		};
 		request(opt);
 	},
-	//设置请求参数，子类重写覆盖， VM对象中调用修改请求参数
+	//设置请求参数，子类重写覆盖， VM对象中可以修改请求参数 k.model.requestParam
+	/**
+	*  参数示例1:
+	*  {
+	*     url: '',
+	*     data: {
+	*     	id: 1
+	*     },
+	*     context: {name: 'type-1'}
+	*  }
+	* 参数示例2:
+	*   [
+	*   	{
+	*     		url:'',
+	*     		data: {id:1},
+	 *    		context: {name:'type-1'}
+	 *    	},
+	 *     {
+	 *     		url:'',
+	 *     		data: {id:2},
+	 *    		context: {name:'type-2'}
+	 *    	},
+	 *  ]
+	*   参数示例3: {
+	*   	request-1: {
+	*   		url: '',
+	*   		context: {name: 'type-1'}
+    *       },
+	*	    request-2: {
+	*	    	url: '',
+	*	       context: {name: 'type-2'}
+	*	    }
+	*   }
+	*    参数示例4: {
+	*    	request-1: [{}, {}],
+	*       request-2: [{}, {}]
+	*    }
+	* */
 	setRequestParam: function(requestParam) {
 		var k = this;
 		k.requestParam = requestParam;
@@ -65,7 +102,7 @@ extend(ModelBase.prototype, eventBase, {
 			k.totalRequest = opt.length;
 			for(var i =0; i< k.totalRequest; i++) {
 				(function(i) {
-					if(i == 0) {
+					if(i === 0) {
 						k.mainName = opt[i].context.name;
 					}
 					k._ajax(opt[i]);
