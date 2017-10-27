@@ -108,12 +108,14 @@ extend(VM.prototype, eventBase, {
 	parseEvent: function() {
 		var k = this;
 		var reg = /\s+/;
+		var kongReg = /(^\s*)|(\s*$)/g;
 		var eArr = [];
 		var l;
 		if (!k.events) {
 			return;
 		}
 		for(var key in k.events) {
+			key = key.replace(kongReg, '');
 			eArr = key.split(reg);
 			eArr.push(k.events[key]);
 			k.eventArr.push(eArr);
