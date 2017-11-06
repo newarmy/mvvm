@@ -1,4 +1,4 @@
-//vm类, 
+//vm基类,
 
 var extend = require('./util/extend');
 var extendClass = require('./util/extendClass');
@@ -6,18 +6,20 @@ var eventBase = require('./eventBase');
 var tplObj = require('./util/tplFunc');
 /**
 	opt说明：
+    element: 容器Dom元素（jquery对象或zepto对象）
 	tpl: 模板
-	model: 数据模型
+	model: 数据模型 (ModelBase 或其子类)
 	selfParam:自定义属性，对象实例自己的属性
+    stateBus: 用于组件间通信的(StateBus对象)
 */
 function VM(opt) {
 	this.element = opt.element;
 	this.model = opt.model;
 	this.tpl = opt.tpl;//string or object
-	this.selfParam = opt.selfParam || null;
+	this.selfParam = opt.selfParam || {};
 	this.stateBus = opt.stateBus || null;
-	this.eventArr = [];//
-	this.isEventParsed = false;//是否解析完dom事件
+	this._eventArr = [];//内部使用
+	this._isEventParsed = false;//是否解析完dom事件
 	this.prepareFunc();
 }
 
@@ -42,8 +44,8 @@ extend(VM.prototype, eventBase, {
 		k.handlerTemplate();
 		k.model.on('getData', k.render, k);
 		k.model.on('error', k.error, k);
-		if(!k.isEventParsed) {
-			k.isEventParsed = true;
+		if(!k._isEventParsed) {
+			k._isEventParsed = true;
 			k.parseEvent();
 		}
 	},
@@ -118,10 +120,10 @@ extend(VM.prototype, eventBase, {
 			key = key.replace(kongReg, '');
 			eArr = key.split(reg);
 			eArr.push(k.events[key]);
-			k.eventArr.push(eArr);
+			k._eventArr.push(eArr);
 		}
-		for(var i = 0, len = k.eventArr.length; i < len; i++) {
-			eArr = k.eventArr[i];
+		for(var i = 0, len = k._eventArr.length; i < len; i++) {
+			eArr = k._eventArr[i];
 			l = eArr.length;
 			if(l == 2) {
 				(function(eArr){
@@ -143,11 +145,11 @@ extend(VM.prototype, eventBase, {
 	},
 	removeEvents: function() {
 		var k = this, arr;
-		for(var i = 0, len = k.eventArr.length; i < len; i++) {
-			arr = k.eventArr[i];
+		for(var i = 0, len = k._eventArr.length; i < len; i++) {
+			arr = k._eventArr[i];
 			k.element.off(arr[0]);
 		}
-        k.eventArr = [];
+        k._eventArr = [];
 	}
 });
 

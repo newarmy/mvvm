@@ -4,6 +4,20 @@
 */
 var ModelBase = require('./ModelBase');
 var VM = require('./VM');
+var StateBus = require('./StateBus');
+
+var stateObj = {
+	subId: 'subId'
+}
+
+var globalStateBus =  new StateBus({states: stateObj});
+globalStateBus.on(stateObj.subId, function(data) {
+    alert(data.payload);
+});
+
+globalStateBus.dispatch(stateObj.subId, {payload: 22});
+
+
 
 
 //创建自己的model类，主要就是重新parse方法，

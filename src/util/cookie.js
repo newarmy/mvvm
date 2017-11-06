@@ -2,8 +2,8 @@
 /**
 * cookie
 */
-define(function () {
-	return {
+
+module.exports =  {
 		set: function (n, v, e, p, d, s) {
 				var t = new Date();
 				e = e || 30;
@@ -29,4 +29,3 @@ define(function () {
 			   ";expires=Fri, 02-Jan-1970 00:00:00 GMT";
 		}
 	};
-});
