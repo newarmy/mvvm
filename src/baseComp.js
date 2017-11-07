@@ -37,15 +37,16 @@ extend(baseVM.prototype, eventBase, {
         if(isDev){
             Log.log('init');
 		}
-        k.init();
         if(k.tpl) {
             k._initParse();
         } else {
             //解析事件
+			k.init();
             k._parseEvent();
 			k._addEventToDom();
         }
 	},
+
     /***
 	 * 组件的初始化操作
 	 * 子类重写
@@ -67,7 +68,14 @@ extend(baseVM.prototype, eventBase, {
     * {'click': 'get'} 用来给element元素注册事件
     * */
 	events: null,
-
+    /**
+     * 销毁组件
+     * */
+    destroy: function() {
+        var k = this;
+        k.removeEvents();
+        k.element = null;
+    },
 	removeEvents: function() {
 		var k = this, arr;
 		for(var i = 0, len = k.eventArr.length; i < len; i++) {
@@ -82,8 +90,16 @@ extend(baseVM.prototype, eventBase, {
 	render: function() {
 		var k = this;
         var html = k.tpl(k.data);
+        if(isDev) {
+            Log.log("html === "+html);
+            Log.log( k.element);
+        }
         k.element.html(html);
         setTimeout(function(){
+            k.init();
+            if(isDev){
+                Log.log('init Dom');
+            }
         	k._addEventToDom();
 		});
 	},
@@ -94,12 +110,13 @@ extend(baseVM.prototype, eventBase, {
             k._isEventParsed = true;
             k._parseEvent();
         }
+        k.render();
     },
     _parseTpl: function() {
         var k = this;
         k.tpl = tplObj.parse(k._filterSpecialLetter(k.tpl));
         if(isDev){
-            Log.log('parseTpl');
+            Log.log('parse template');
         }
     },
     _filterSpecialLetter: function(tpl) {

@@ -2,9 +2,9 @@
 /**
 
 */
-var ModelBase = require('./ModelBase');
-var VM = require('./VM');
-var StateBus = require('./StateBus');
+var ModelBase = require('../src/ModelBase');
+var VM = require('../src/VM');
+var StateBus = require('../src/StateBus');
 
 var stateObj = {
 	subId: 'subId'
