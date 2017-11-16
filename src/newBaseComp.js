@@ -56,17 +56,37 @@ var Log = require('./util/log');
 4. 将解析模板得到的内容插入到DOM容器中 （可以用这个过程，也可以没有）
 5. 添加解析完事件到DOM上
 6. 销毁组件 （销毁事件，销毁定时器，销毁dom）
-
+<div>
+    <p>$placeholder</p>
+    <p>$placeholder</p>
+</div>
+可以添加子组件
 */
 var isDev = false;
+function getRandomStr(str) {
+    return str+'_'+String((new Date()).getTime()*Math.random()).substr(0,13);
+}
+var _childReg = /\{\{([^\{\}]*)\}\}/g; //匹配子组件在父组件模板的占位符。
+var _childRootDomReg =/^<([a-z/][-a-z0-9_:.]*)[^>/]*>/; //子组件模板字符串首个tag的开始标签
+var _idReg = /id=[^\s>]*/;
 function baseVM(opt) {
 	this.element = opt.element;
 	this.selfParam = opt.selfParam || {};
+	/**
+     * 子组件
+     * childComponents = {name1: CompObject1, name2: CompObject2}
+     * */
+	this.childComponents = opt.childComponents || null;
 	this.stateBus = opt.stateBus || null;
 	this.tpl = opt.tpl || null;//视图模板
 	this.data = opt.data || null;//跟视图相关的数据
+    this._parentComp = null;//父组件
 	this._eventArr = [];//内部使用
-    this._cId = 'comp'+(String((new Date()).getTime()*Math.random()).substr(0,13));//实例的唯一识别
+    this._cackeHtml = "";
+    this._cId = getRandomStr('comp');//实例的唯一识别
+    this._hasChild = false;//是否有子组件
+    this._isRoot = true;//是否为根组件
+    this._id = null;//获得子组件容器id
 	isDev = opt.isDev || false;
 	this._prepareFunc();
 }
@@ -74,10 +94,14 @@ extend(baseVM.prototype, eventBase, {
     //初始操作
 	_prepareFunc: function() {
         var k = this;
-
+        if(k.childComponents) {
+            k._hasChild = true;
+            k._setParentForChild();
+        }
         if(!k.element) {
             k.element =$('<div></div>');
         }
+
         if(isDev){
             Log.log('init');
 		}
@@ -92,7 +116,45 @@ extend(baseVM.prototype, eventBase, {
 			k._addEventToDom();
         }
 	},
-    append: function() {
+    /**
+     * 给子组件设置父组件对象
+     * */
+    _setParentForChild: function () {
+        var k = this;
+        for(var key in k.childComponents) {
+           k.childComponents[key]._parentComp = k;
+           k.childComponents[key]._isRoot = false;
+        }
+    },
+    mounted: function() {
+	    var k = this;
+        //如果是根组件
+        if(k._isRoot) {
+            k.element.append(k._cackeHtml);
+
+                k.init && k.init();
+                k._addEventToDom();
+                if(isDev){
+                    Log.log('--------add Dom to document-----------');
+                }
+
+                for(var key in k.childComponents) {
+                    k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
+                    k.childComponents[key].mounted();
+                }
+
+
+
+        } else {//如果不是是根组件
+            k.init && k.init();
+            k._addEventToDom();
+            for(var key in k.childComponents) {
+                k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
+                k.childComponents[key].mounted();
+            }
+
+
+        }
 
     },
     /***
@@ -109,6 +171,46 @@ extend(baseVM.prototype, eventBase, {
     methods: {
 
 	},
+    _generateHTML: function() {
+        var k = this;
+        if(k.data){
+            k._cackeHtml = k.tpl(k.data);
+        }else {
+            k._cackeHtml = k.tpl({});
+        }
+
+        if(isDev) {
+            Log.log("genetate html");
+           // Log.log("k._hasChild =" + k._hasChild )
+           // Log.log('------------------------------------------');
+        }
+       if( k._hasChild ){
+           k._joinChildHtml();
+       }
+    },
+    _joinChildHtml: function() {
+        var k = this;
+        if(isDev){
+            Log.log(_childReg);
+        }
+        k._cackeHtml = k._cackeHtml.replace(_childReg, function(reg, creg) {
+            if(isDev){
+              //  Log.log(creg);
+            }
+            var childComp = k.childComponents[creg];
+            var chtml = childComp._cackeHtml;
+            if(isDev){
+               // Log.log(chtml)
+            }
+            var id = getRandomStr('child').replace('.',"");
+            var startTagStr = chtml.match(_childRootDomReg)[0];
+            startTagStr = startTagStr.replace(_idReg, '');
+            startTagStr = startTagStr.replace(/>$/, ' id="'+id+'">');
+            childComp._id="#"+id;
+            chtml = chtml.replace(_childRootDomReg, startTagStr)
+           return chtml;
+        });
+    },
     /**
     * 事件对应的回掉函数在methods
 	 * 子类重写，
@@ -123,6 +225,11 @@ extend(baseVM.prototype, eventBase, {
         var k = this;
         k.removeEvents();
         k.element = null;
+        for(var key in k.childComponents) {
+            k.childComponents[key].removeEvents();
+            k.childComponents[key].element = null;
+            k.childComponents[key] = null;
+        }
     },
 	removeEvents: function() {
 		var k = this, arr;
@@ -135,22 +242,6 @@ extend(baseVM.prototype, eventBase, {
             Log.log('remove Event');
         }
 	},
-	render: function() {
-		var k = this;
-        var html = k.tpl(k.data);
-        if(isDev) {
-            Log.log("html === "+html);
-            Log.log( k.element);
-        }
-        k.element.html(html);
-        setTimeout(function(){
-            k.init();
-            if(isDev){
-                Log.log('init Dom');
-            }
-        	k._addEventToDom();
-		});
-	},
     _initParse: function() {
         var k = this;
         k._parseTpl();
@@ -158,7 +249,7 @@ extend(baseVM.prototype, eventBase, {
             k._isEventParsed = true;
             k._parseEvent();
         }
-        k.render();
+        k._generateHTML();
     },
     _parseTpl: function() {
         var k = this;
@@ -243,4 +334,19 @@ extend(baseVM.prototype, eventBase, {
 
 baseVM.extend = extendClass;
 
-module.exports = baseVM;
+module.exports =  function(opt){
+    var NewClass = baseVM.extend({
+        init: opt.init,
+        methods: opt.methods,
+        events: opt.events
+    });
+    return new NewClass({
+        element: opt.element,
+        selfParam: opt.selfParam,
+        childComponents: opt.childComponents,
+        stateBus: opt.stateBus,
+        tpl: opt.template,
+        data: opt.data,
+        isDev: opt.isDev
+    });
+}

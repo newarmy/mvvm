@@ -9,7 +9,10 @@ module.exports = function (opt) {
 		dataType : opt.dataType || 'json',
 		data: opt.data || {},
 		context: opt.context || true,
-		type: opt.method || "GET",
+        headers: opt.headers,
+        contentType: opt.contentType,
+        mimeType: opt.mimeType,
+        type: opt.method || "GET",
 		success:function(data, stateText, jqXHR){
 			opt.success(data, stateText, jqXHR, this);
 		},

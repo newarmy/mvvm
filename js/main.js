@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -185,16 +185,16 @@ var template = {
 		var endArr;//结束标识符分割的数组
 		var variable;
 		var varArr;//
-		var html = 'var data = arguments[0]; var str=""; with(data){';
+		var html = 'var data = arguments[0];  var str=""; with(data){';
 		var temp;
 		for(var i = 0, l = startArr.length; i < l; i++) {
 			temp = startArr[i];
-			var endArr = temp.split(this.endTag);
+			 endArr = temp.split(this.endTag);
 			if(endArr.length == 1) {//纯字符串
 				html+='str+=\''+endArr[0]+'\';';
 			} else {//有变量或语句
-				var variable = endArr[0];
-				var varArr = variable.match(reg);
+				variable = endArr[0];
+				varArr = variable.match(reg);
 				if(varArr && varArr.length==2) {//是变量
 					
 					html +='str+='+ varArr[1]+';'; 
@@ -214,7 +214,12 @@ module.exports = template;
 
 /***/ }),
 /* 4 */,
-/* 5 */
+/* 5 */,
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //数据加载处理模块
@@ -222,7 +227,7 @@ module.exports = template;
 	opt.url： 数据的地址 
 */
 var extend = __webpack_require__(0);
-var request = __webpack_require__(11);
+var request = __webpack_require__(16);
 var extendClass = __webpack_require__(2);
 var eventBase = __webpack_require__(1);
 function ModelBase () {
@@ -344,7 +349,7 @@ ModelBase.extend = extendClass;
 module.exports = ModelBase;
 
 /***/ }),
-/* 6 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //集中管理状态的基类
@@ -430,7 +435,7 @@ stateBus.extend = extendClass;
 module.exports = stateBus;
 
 /***/ }),
-/* 7 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm基类,
@@ -593,10 +598,10 @@ VM.extend = extendClass;
 module.exports = VM;
 
 /***/ }),
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports) {
 
 
@@ -610,7 +615,10 @@ module.exports = function (opt) {
 		dataType : opt.dataType || 'json',
 		data: opt.data || {},
 		context: opt.context || true,
-		type: opt.method || "GET",
+        headers: opt.headers,
+        contentType: opt.contentType,
+        mimeType: opt.mimeType,
+        type: opt.method || "GET",
 		success:function(data, stateText, jqXHR){
 			opt.success(data, stateText, jqXHR, this);
 		},
@@ -630,16 +638,17 @@ module.exports = function (opt) {
 
 
 /***/ }),
-/* 12 */
+/* 17 */,
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var ModelBase = __webpack_require__(5);
-var VM = __webpack_require__(7);
-var StateBus = __webpack_require__(6);
+var ModelBase = __webpack_require__(10);
+var VM = __webpack_require__(12);
+var StateBus = __webpack_require__(11);
 
 var stateObj = {
 	subId: 'subId'

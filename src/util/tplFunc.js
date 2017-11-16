@@ -12,16 +12,16 @@ var template = {
 		var endArr;//结束标识符分割的数组
 		var variable;
 		var varArr;//
-		var html = 'var data = arguments[0]; var str=""; with(data){';
+		var html = 'var data = arguments[0];  var str=""; with(data){';
 		var temp;
 		for(var i = 0, l = startArr.length; i < l; i++) {
 			temp = startArr[i];
-			var endArr = temp.split(this.endTag);
+			 endArr = temp.split(this.endTag);
 			if(endArr.length == 1) {//纯字符串
 				html+='str+=\''+endArr[0]+'\';';
 			} else {//有变量或语句
-				var variable = endArr[0];
-				var varArr = variable.match(reg);
+				variable = endArr[0];
+				varArr = variable.match(reg);
 				if(varArr && varArr.length==2) {//是变量
 					
 					html +='str+='+ varArr[1]+';'; 

@@ -7,7 +7,8 @@ var path = require('path');
 module.exports ={
 	entry: {
 		main: './test/main.js',
-		tabMain: './test/tabMain.js'
+		tabMain: './test/tabMain.js',
+        cMain: './test/combinationMain.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'js'),
