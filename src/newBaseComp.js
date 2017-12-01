@@ -77,6 +77,7 @@ function baseVM(opt) {
      * childComponents = {name1: CompObject1, name2: CompObject2}
      * */
 	this.childComponents = opt.childComponents || null;
+	this.store = opt.store || null;//数据流
 	this.stateBus = opt.stateBus || null;
 	this.tpl = opt.tpl || null;//视图模板
 	this.data = opt.data || null;//跟视图相关的数据
@@ -131,29 +132,26 @@ extend(baseVM.prototype, eventBase, {
         //如果是根组件
         if(k._isRoot) {
             k.element.append(k._cackeHtml);
+            k.init && k.init();
+            k._addEventToDom();
+            if(isDev){
+                Log.log('--------add Dom to document-----------');
+            }
 
-                k.init && k.init();
-                k._addEventToDom();
-                if(isDev){
-                    Log.log('--------add Dom to document-----------');
-                }
-
-                for(var key in k.childComponents) {
-                    k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
-                    k.childComponents[key].mounted();
-                }
-
-
-
+            for(var key in k.childComponents) {
+                k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
+                k.childComponents[key].store = k.store;
+                k.childComponents[key].mounted();
+            }
         } else {//如果不是是根组件
             k.init && k.init();
             k._addEventToDom();
+
             for(var key in k.childComponents) {
                 k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
+                k.childComponents[key].store = k.store;
                 k.childComponents[key].mounted();
             }
-
-
         }
 
     },
@@ -347,6 +345,7 @@ module.exports =  function(opt){
         stateBus: opt.stateBus,
         tpl: opt.template,
         data: opt.data,
+        store: opt.store,
         isDev: opt.isDev
     });
 }

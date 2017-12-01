@@ -5,7 +5,7 @@ var baseComp = require('../../src/newBaseComp');
 
 var childC = baseComp.extend({
     events: {
-        'click p': 'show'
+        'click': 'show'
     },
     methods: {
         show: function(e, that){

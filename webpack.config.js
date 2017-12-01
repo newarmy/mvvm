@@ -8,7 +8,8 @@ module.exports ={
 	entry: {
 		main: './test/main.js',
 		tabMain: './test/tabMain.js',
-        cMain: './test/combinationMain.js'
+        cMain: './test/combinationMain.js',
+		fMain: './test/testFlowMain.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'js'),
