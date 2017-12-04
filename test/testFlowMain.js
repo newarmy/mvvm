@@ -8,19 +8,22 @@ var t1 = require('./template/testFlow/child1.html');
 var t2 = require('./template/testFlow/child2.html');
 var tp = require('./template/testFlow/parent.html');
 
-
+// 子组件1
 var c1obj = new Vue({
-    template: t1,
-    isDev: true,
+    template: t1, //模板文件
+    isDev: true, //输出流程标识
+    // 事件
     events: {
         'click p': 'show'
     },
+    // 初始操作
     init: function () {
         var k = this;
         k.store.on('tab1', function(data) {
             k.element.html(data);
         })
     },
+    //事件中的回调方法
     methods: {
         show: function(e, that){
             alert(that.html());
@@ -28,6 +31,7 @@ var c1obj = new Vue({
     }
 
 })
+// 子组件2
 var c2obj = new Vue({
     template: t2,
     isDev: true,
@@ -47,7 +51,7 @@ var c2obj = new Vue({
     }
 })
 
-
+//数据流控制类
 var flow = Flow({
     state: {
         tab1: '',
@@ -69,10 +73,15 @@ var flow = Flow({
     }
 })
 
+
+//父组件
 var pobj = new Vue({
+    //组件容器dom
 	element: $('.box1'),
     template: tp,
+    //数据流控制
     store: flow,
+    //注册子组件
     childComponents: {
     	'comp1':c1obj,
 		'comp2':c2obj
@@ -100,4 +109,5 @@ var pobj = new Vue({
     }
 })
 
+//添加到页面中
 pobj.mounted();

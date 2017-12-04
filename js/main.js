@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 22);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -232,7 +232,7 @@ module.exports = template;
 	opt.url： 数据的地址 
 */
 var extend = __webpack_require__(0);
-var request = __webpack_require__(20);
+var request = __webpack_require__(21);
 var extendClass = __webpack_require__(2);
 var eventBase = __webpack_require__(1);
 function ModelBase () {
@@ -605,7 +605,8 @@ module.exports = VM;
 /***/ }),
 /* 18 */,
 /* 19 */,
-/* 20 */
+/* 20 */,
+/* 21 */
 /***/ (function(module, exports) {
 
 
@@ -642,8 +643,9 @@ module.exports = function (opt) {
 
 
 /***/ }),
-/* 21 */,
-/* 22 */
+/* 22 */,
+/* 23 */,
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 

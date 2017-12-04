@@ -6,50 +6,18 @@ var eventBase = require('./eventBase');
 var tplObj = require('./util/tplFunc');
 var Log = require('./util/log');
 /**
-	opt说明：
+ 组件强依赖zepto.js 或 jquery.js
+
+ opt说明：
 	element: 容器Dom元素（jquery对象或zepto对象）
 	selfParam:存放自定义属性的，对象实例自己的属性和自己的方法（钩子方法可以放在这里）
  	stateBus: 用于组件间通信的(StateBus对象)
     tpl: 视图模板
 	data: 跟视图相关的数据
+    store：数据流控制
+    childComponents：子组件
 
-    通过baseVM.extend({})来扩展创建自己的component，这里说的component是
-    指一个独立的交互效果
-    如：
-
- tabComp = baseComp.extend({
-     //做一些组件初始化操作
-     init: function() {
-         var k = this;
-         k.heads = k.element.find('li');
-         k.cons = k.element.find('#tabC').find('div');
-         k.heads.removeClass('cur').eq(0).addClass('cur');
-         k.cons.removeClass('cur').eq(0).addClass('cur');
-     },
-     // 注册事件
-     events: {
-         'click li': 'showCurrentDiv'
-     },
-    methods:{
-        // 事件对应的行为函数
-        showCurrentDiv: function(e, it) {
-            var k = this;
-            e.preventDefault();
-            var index = it.index();
-            k.heads.removeClass('cur').eq(index).addClass('cur');
-            k.cons.removeClass('cur').eq(index).addClass('cur');
-        }
-    }，
-    // 销毁
-    destroy: function() {
-        var k = this;
-        k.removeEvents();
-        k.heads = null;
-        k.cons = null;
-        k.element = null;
-    }
-
-   component 构建流程
+ component 构建流程
 1. 解析模板（可以用这个过程，也可以没有）
 2. 定义行为（事件行为 或 定时器行为）
 3. 解析事件

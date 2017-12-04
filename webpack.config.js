@@ -9,7 +9,8 @@ module.exports ={
 		main: './test/main.js',
 		tabMain: './test/tabMain.js',
         cMain: './test/combinationMain.js',
-		fMain: './test/testFlowMain.js'
+		fMain: './test/testFlowMain.js',
+		event: './test/event/eventTest.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'js'),
