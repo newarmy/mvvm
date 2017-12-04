@@ -83,7 +83,7 @@ function baseVM(opt) {
 	this.data = opt.data || null;//跟视图相关的数据
     this._parentComp = null;//父组件
 	this._eventArr = [];//内部使用
-    this._cackeHtml = "";
+    this._cackeHtml = "";// 缓存拼接的html字符串
     this._cId = getRandomStr('comp');//实例的唯一识别
     this._hasChild = false;//是否有子组件
     this._isRoot = true;//是否为根组件
@@ -127,6 +127,9 @@ extend(baseVM.prototype, eventBase, {
            k.childComponents[key]._isRoot = false;
         }
     },
+    /**
+     * 将组件添加到页面中
+     * */
     mounted: function() {
 	    var k = this;
         //如果是根组件
@@ -271,7 +274,6 @@ extend(baseVM.prototype, eventBase, {
 		 \u0020	空格	<SP>
 		 \u00A0	非断空格	<NBSP>
 		 \uFEFF	位序掩码	<BOM>
-
 
 		 行终止字符
 		 字符编码值	名称	正式名称
