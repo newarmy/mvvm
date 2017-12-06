@@ -1,0 +1,14 @@
+/*公共样式*/
+body,h1,h2,h3,h4,h5,h6,dl,dt,dd,ul,ol,li,th,td,p,form,input,button,textarea,article,footer,header,menu,nav,section{margin:0;padding:0}
+img{vertical-align:middle;border:0;max-width:100%}
+a{text-decoration:none}
+ul,li{vertical-align:middle;list-style:none}
+html,body{width:100%;background:#fff;}
+html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; font-size:100px;}
+body{margin:0; font:normal 16px "Microsoft Yahei","Helvetica Neue",Helvetica,Arial,STHeiTi,sans-serif;-webkit-tap-highlight-color:transparent;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+button{-webkit-appearance:none}
+img{max-width:100%;width: 100%;}
+.clearfix:before,.clearfix:after{content:'';display:table}
+.clearfix:after{clear:both}
+*:focus { outline: 0 none; }
+textarea{ resize:none;}

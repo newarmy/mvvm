@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -224,7 +224,8 @@ module.exports = template;
 /* 12 */,
 /* 13 */,
 /* 14 */,
-/* 15 */
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //数据加载处理模块
@@ -232,7 +233,7 @@ module.exports = template;
 	opt.url： 数据的地址 
 */
 var extend = __webpack_require__(0);
-var request = __webpack_require__(21);
+var request = __webpack_require__(23);
 var extendClass = __webpack_require__(2);
 var eventBase = __webpack_require__(1);
 function ModelBase () {
@@ -354,7 +355,7 @@ ModelBase.extend = extendClass;
 module.exports = ModelBase;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //集中管理状态的基类
@@ -440,7 +441,7 @@ stateBus.extend = extendClass;
 module.exports = stateBus;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm基类,
@@ -603,10 +604,11 @@ VM.extend = extendClass;
 module.exports = VM;
 
 /***/ }),
-/* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */
+/* 21 */,
+/* 22 */,
+/* 23 */
 /***/ (function(module, exports) {
 
 
@@ -643,18 +645,18 @@ module.exports = function (opt) {
 
 
 /***/ }),
-/* 22 */,
-/* 23 */,
-/* 24 */
+/* 24 */,
+/* 25 */,
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var ModelBase = __webpack_require__(15);
-var VM = __webpack_require__(17);
-var StateBus = __webpack_require__(16);
+var ModelBase = __webpack_require__(16);
+var VM = __webpack_require__(18);
+var StateBus = __webpack_require__(17);
 
 var stateObj = {
 	subId: 'subId'
