@@ -1,13 +1,285 @@
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 0:
+/***/ (function(module, exports) {
+
+
+/**
+* 拷贝属性
+*/
+
+module.exports = function (obj) {
+	var length = arguments.length;
+	var that = this, target;
+	if(!obj) {
+		return null;
+	}
+	if(length < 2 ) {
+		return obj;
+	}
+	
+	for(var i = 1; i < length; i++) {
+		target = arguments[i];
+		for(var key in target) {
+			//if(obj[key] === void 0) 
+			obj[key] = target[key];
+		}
+	}
+	return obj;
+	
+};
+
+
+/***/ }),
+
+/***/ 1:
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+
+/***/ 2:
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+* 继承工具方法
+*/
+var extend = __webpack_require__(0);
+module.exports = function (protoProps, staticProps) {
+	var parent = this;
+	var child;
+	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
+		child = protoProps.prototype.constructor;
+	} else {
+		child = function () {
+			return parent.apply(this, arguments);
+		};
+	}
+	//拷贝静态属性
+	extend(child, parent, staticProps);
+	//子类与父类之间的代理，使子类不能修改父类方法
+	var proxy = function() {
+		this.constructor = child;
+	};
+	proxy.prototype = parent.prototype;
+	child.prototype = new proxy();
+	
+	//拷贝原型属性
+	if (protoProps) extend(child.prototype, protoProps);
+	
+	return child;
+};
+
+/***/ }),
+
+/***/ 24:
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Created by xinjundong on 2017/12/4.
+ */
+var baseComp = __webpack_require__(5)
+
+var dom1 = $('.test1');
+
+var comp = new baseComp({
+    element: dom1,
+    init: function () {
+      this.test()
+    },
+    events: {
+      'click': 'clickFunc'
+    },
+    methods: {
+        test: function() {
+            alert(this.testdata);
+        },
+        clickFunc: function () {
+            this.selfParam.testdata = "click";
+            this.test();
+        }
+    },
+    selfParam: {
+        testdata: 'dkdkdk'
+    }
+});
+
+/***/ }),
+
+/***/ 3:
+/***/ (function(module, exports) {
+
+
+/**
+* template
+*/
+
+var template = {
+	startTag: "<%",
+	endTag: "%>",
+	parse: function (str) {
+		var reg = /^=(.+)/;//来判断是变量还是语句
+		var startArr = str.split(this.startTag);//开始标识符分割的数组
+		var endArr;//结束标识符分割的数组
+		var variable;
+		var varArr;//
+		var html = 'var data = arguments[0];  var str=""; with(data){';
+		var temp;
+		for(var i = 0, l = startArr.length; i < l; i++) {
+			temp = startArr[i];
+			 endArr = temp.split(this.endTag);
+			if(endArr.length == 1) {//纯字符串
+				html+='str+=\''+endArr[0]+'\';';
+			} else {//有变量或语句
+				variable = endArr[0];
+				varArr = variable.match(reg);
+				if(varArr && varArr.length==2) {//是变量
+					
+					html +='str+='+ varArr[1]+';'; 
+					html += 'str+=\''+endArr[1]+'\';';
+				} else {
+					html += endArr[0];//是语句
+					html += 'str+=\''+endArr[1]+'\';';
+				}
+			}
+		}
+		html+='} return str;';
+		//console.log(html);
+		return new Function( html);
+	}
+};
+module.exports = template;
+
+/***/ }),
+
+/***/ 4:
+/***/ (function(module, exports) {
+
+
+/**
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
+
+/***/ }),
+
+/***/ 5:
+/***/ (function(module, exports, __webpack_require__) {
+
 //vm类, 
 
-var extend = require('./util/extend');
-var extendClass = require('./util/extendClass');
-var eventBase = require('./eventBase');
-var tplObj = require('./util/tplFunc');
-var Log = require('./util/log');
-var EVENT = require('./event-system/event-system')
+var extend = __webpack_require__(0);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
+var tplObj = __webpack_require__(3);
+var Log = __webpack_require__(4);
 /**
- 不依赖zepto.js 或 jquery.js时，使用此基类
+ 组件强依赖zepto.js 或 jquery.js
 
  opt说明：
 	element: 容器Dom元素（jquery对象或zepto对象）
@@ -34,9 +306,6 @@ var EVENT = require('./event-system/event-system')
 var isDev = false;
 function getRandomStr(str) {
     return str+'_'+String((new Date()).getTime()*Math.random()).substr(0,13);
-}
-function get (dom, selector) {
-    return dom.querySelector(selector);
 }
 var _childReg = /\{\{([^\{\}]*)\}\}/g; //匹配子组件在父组件模板的占位符。
 var _childRootDomReg =/^<([a-z/][-a-z0-9_:.]*)[^>/]*>/; //子组件模板字符串首个tag的开始标签
@@ -67,13 +336,13 @@ extend(baseVM.prototype, eventBase, {
     //初始操作
 	_prepareFunc: function() {
         var k = this;
+        k._bindProxy();
         if(k.childComponents) {
             k._hasChild = true;
             k._setParentForChild();
         }
-        k._bindProxy();
         if(!k.element) {
-            k.element =document.createElement('div');
+            k.element =$('<div></div>');
         }
 
         if(isDev){
@@ -94,9 +363,9 @@ extend(baseVM.prototype, eventBase, {
      * 代理 selfParam 和 methods
      * */
     _bindProxy: function() {
-        var k = this;
-        if(k.selfParam) {
-            if(Object.defineProperty && Object.keys) {
+	    var k = this;
+	    if(k.selfParam) {
+	        if(Object.defineProperty && Object.keys) {
                 k._bindData();
             } else {
                 for (var key in k.selfParam) {
@@ -111,19 +380,19 @@ extend(baseVM.prototype, eventBase, {
         }
     },
     _bindData: function () {
-        var k = this;
-        Object.keys(k.selfParam).forEach(function (key) {
-            Object.defineProperty(k, key, {
-                configurable: true,
-                enumerable: true,
-                get: function proxyFunc () {
-                    return k.selfParam[key]
-                },
-                set: function proxyFunc (val) {
-                    k.selfParam[key] = val;
-                }
-            })
-        })
+      var k = this;
+      Object.keys(k.selfParam).forEach(function (key) {
+          Object.defineProperty(k, key, {
+              configurable: true,
+              enumerable: true,
+              get: function proxyFunc () {
+                  return k.selfParam[key]
+              },
+              set: function proxyFunc (val) {
+                  k.selfParam[key] = val;
+              }
+          })
+      })
     },
     /**
      * 给子组件设置父组件对象
@@ -150,7 +419,7 @@ extend(baseVM.prototype, eventBase, {
             }
 
             for(var key in k.childComponents) {
-                k.childComponents[key].element = get(k.element, k.childComponents[key]._id);
+                k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
                 k.childComponents[key].store = k.store;
                 k.childComponents[key].mounted();
             }
@@ -159,7 +428,7 @@ extend(baseVM.prototype, eventBase, {
             k._addEventToDom();
 
             for(var key in k.childComponents) {
-                k.childComponents[key].element =  get(k.element, k.childComponents[key]._id);
+                k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
                 k.childComponents[key].store = k.store;
                 k.childComponents[key].mounted();
             }
@@ -241,8 +510,11 @@ extend(baseVM.prototype, eventBase, {
         }
     },
 	removeEvents: function() {
-		var k = this;
-        EVENT.removeAllEvent(k.element)
+		var k = this, arr;
+		for(var i = 0, len = k.eventArr.length; i < len; i++) {
+			arr = k.eventArr[i];
+			k.element.off(arr[0]);
+		}
         k.eventArr = [];
         if(isDev){
             Log.log('remove Event');
@@ -318,16 +590,16 @@ extend(baseVM.prototype, eventBase, {
             l = eArr.length;
             if(l === 2) {
                 (function(eArr){
-                    console.log(k.element)
-                    EVENT.addEvent(k.element, eArr[0], function(e) {
+                    k.element.on(eArr[0], function(e) {
                         k.methods[eArr[1]].call(k, e);
-                    })
+                    });
                 }(eArr));
             } else {
                 (function(eArr){
-                    EVENT.addProxyEvent(k.element, eArr[0], eArr[1], function(e) {
-                        k.methods[eArr[2]].call(k, e);
-                    })
+                    k.element.on(eArr[0], eArr[1], function(e) {
+                        var $t = $(this);
+                        k.methods[eArr[2]].call(k, e, $t);
+                    });
                 }(eArr));
             }
         }
@@ -356,3 +628,7 @@ module.exports =  function(opt){
         isDev: opt.isDev
     });
 }
+
+/***/ })
+
+/******/ });

@@ -10,7 +10,8 @@ module.exports ={
 		tabMain: './test/tabMain.js',
         cMain: './test/combinationMain.js',
 		fMain: './test/testFlowMain.js',
-		event: './test/event/eventTest.js',
+        event: './test/event/eventTest.js',
+        bind: './test/bind/bindTest.js',
 		slide: './test/slide/slide.js'
 	},
 	output: {

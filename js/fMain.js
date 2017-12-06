@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 29);
+/******/ 	return __webpack_require__(__webpack_require__.s = 30);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -296,6 +296,7 @@ extend(baseVM.prototype, eventBase, {
     //初始操作
 	_prepareFunc: function() {
         var k = this;
+        k._bindProxy();
         if(k.childComponents) {
             k._hasChild = true;
             k._setParentForChild();
@@ -318,6 +319,41 @@ extend(baseVM.prototype, eventBase, {
 			k._addEventToDom();
         }
 	},
+    /**
+     * 代理 selfParam 和 methods
+     * */
+    _bindProxy: function() {
+	    var k = this;
+	    if(k.selfParam) {
+	        if(Object.defineProperty && Object.keys) {
+                k._bindData();
+            } else {
+                for (var key in k.selfParam) {
+                    k[key] = k.selfParam[key];
+                }
+            }
+        }
+        if(k.methods) {
+            for(var method in k.methods) {
+                k[method] = k.methods[method]
+            }
+        }
+    },
+    _bindData: function () {
+      var k = this;
+      Object.keys(k.selfParam).forEach(function (key) {
+          Object.defineProperty(k, key, {
+              configurable: true,
+              enumerable: true,
+              get: function proxyFunc () {
+                  return k.selfParam[key]
+              },
+              set: function proxyFunc (val) {
+                  k.selfParam[key] = val;
+              }
+          })
+      })
+    },
     /**
      * 给子组件设置父组件对象
      * */
@@ -642,7 +678,8 @@ module.exports = function (opt) {
 /* 26 */,
 /* 27 */,
 /* 28 */,
-/* 29 */
+/* 29 */,
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
