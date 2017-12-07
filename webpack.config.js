@@ -12,7 +12,7 @@ module.exports ={
 		fMain: './test/testFlowMain.js',
         event: './test/event/eventTest.js',
         bind: './test/bind/bindTest.js',
-		slide: './test/slide/slide.js'
+		slide: './test/slide/slidenew.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'js'),

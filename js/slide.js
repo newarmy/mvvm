@@ -377,7 +377,7 @@ var tplObj = __webpack_require__(3);
 var Log = __webpack_require__(4);
 var EVENT = __webpack_require__(6)
 /**
- 组件强依赖zepto.js 或 jquery.js
+ 不依赖zepto.js 或 jquery.js时，使用此基类
 
  opt说明：
 	element: 容器Dom元素（jquery对象或zepto对象）
@@ -441,6 +441,7 @@ extend(baseVM.prototype, eventBase, {
             k._hasChild = true;
             k._setParentForChild();
         }
+        k._bindProxy();
         if(!k.element) {
             k.element =document.createElement('div');
         }
@@ -459,6 +460,41 @@ extend(baseVM.prototype, eventBase, {
 			k._addEventToDom();
         }
 	},
+    /**
+     * 代理 selfParam 和 methods
+     * */
+    _bindProxy: function() {
+        var k = this;
+        if(k.selfParam) {
+            if(Object.defineProperty && Object.keys) {
+                k._bindData();
+            } else {
+                for (var key in k.selfParam) {
+                    k[key] = k.selfParam[key];
+                }
+            }
+        }
+        if(k.methods) {
+            for(var method in k.methods) {
+                k[method] = k.methods[method]
+            }
+        }
+    },
+    _bindData: function () {
+        var k = this;
+        Object.keys(k.selfParam).forEach(function (key) {
+            Object.defineProperty(k, key, {
+                configurable: true,
+                enumerable: true,
+                get: function proxyFunc () {
+                    return k.selfParam[key]
+                },
+                set: function proxyFunc (val) {
+                    k.selfParam[key] = val;
+                }
+            })
+        })
+    },
     /**
      * 给子组件设置父组件对象
      * */
@@ -825,13 +861,13 @@ var Slide = new BaseComp({
     init: function () {
         var k = this;
 
-        if(k.selfParam.isNoFullScreen){
-            k.methods.resizeLayoutNoScreen.call(k);
+        if(k.isNoFullScreen){
+            k.resizeLayoutNoScreen();
         }else{
-            k.methods.resizeLayout.call(k);
+            k.resizeLayout();
         }
-        if(k.selfParam.auto) {
-            k.methods.automove.call(k)
+        if(k.auto) {
+            k.automove()
         }
     },
     events: {
@@ -843,30 +879,30 @@ var Slide = new BaseComp({
     methods: {
         initDom: function () {
             var k = this;
-            k.selfParam._elParent = k.selfParam.el.parentNode;
-            k.selfParam._chirdren = k.selfParam.el.getElementsByTagName(k.selfParam.tagName);
-            k.selfParam._chirdren = Array.prototype.slice.call(k.selfParam._chirdren, 0);
-            k.selfParam._count = k.selfParam._chirdren.length;
+            k._elParent = k.el.parentNode;
+            k._chirdren = k.el.getElementsByTagName(k.tagName);
+            k._chirdren = Array.prototype.slice.call(k._chirdren, 0);
+            k._count = k._chirdren.length;
         },
         resizeLayout: function () {
             var k = this;
-            k.methods.initDom.call(k)
-            if(k.selfParam.swipe === 'X') {
-                k.selfParam._chirdW = getStyleValue(k.selfParam._elParent, 'width');
-                for (var i = 0; i < k.selfParam._count; i++) {
-                    k.selfParam._chirdren[i].style.width = k.selfParam._chirdW + "px";
-                    k.selfParam._elWidth += k.selfParam._chirdW;
+            k.initDom(k)
+            if(k.swipe === 'X') {
+                k._chirdW = getStyleValue(k._elParent, 'width');
+                for (var i = 0; i < k._count; i++) {
+                    k._chirdren[i].style.width = k._chirdW + "px";
+                    k._elWidth += k._chirdW;
                 }
-                k.selfParam.el.style.width = k.selfParam._elWidth + "px";
+                k.el.style.width = k._elWidth + "px";
             } else if(k.swipe === 'Y') {
-                k.chirdH = getStyleValue(k.selfParam._elParent, 'height');
-                for (var i = 0; i < k.selfParam._count; i++) {
-                    k.selfParam._chirdren[i].style.height = k.selfParam._chirdH + "px";
-                    k.selfParam._elHeight += k.selfParam._chirdH;
+                k.chirdH = getStyleValue(k._elParent, 'height');
+                for (var i = 0; i < k._count; i++) {
+                    k._chirdren[i].style.height = k._chirdH + "px";
+                    k._elHeight += k._chirdH;
                 }
-                k.selfParam.el.style.height = k.selfParam._elHeight + "px";
+                k.el.style.height = k._elHeight + "px";
             }
-            if(k.selfParam.nav) {
+            if(k.nav) {
                 if(k.navType === 'normal') {
                     k.createNav();
                 } else if(k.navType === 'num') {
@@ -876,267 +912,267 @@ var Slide = new BaseComp({
         },
         resizeLayoutNoScreen: function () {
             var k = this;
-            k.methods.initDom.call(k)
-            if(k.selfParam.swipe === 'X') {
-                k.selfParam._elWidth = 0;
-                k.selfParam._chirdren.forEach(function(ele, idx) {
+            k.initDom()
+            if(k.swipe === 'X') {
+                k._elWidth = 0;
+                k._chirdren.forEach(function(ele, idx) {
                     var extW = getStyleValue(ele, 'padding-left') + getStyleValue(ele, 'padding-right') + getStyleValue(ele, 'margin-left') +getStyleValue(ele, 'margin-right');
-                    k.selfParam._elWidth += (getStyleValue(ele, 'width') + extW);
+                    k._elWidth += (getStyleValue(ele, 'width') + extW);
                 });
                 k.el.style.width = k.elWidth + "px";
-            } else if(k.selfParam.swipe === 'Y') {
-                k.selfParam._elHeight= 0;
-                k.selfParam._chirdren.forEach(function(ele, idx) {
-                    k.selfParam._elHeight += getStyleValue(ele, 'height');
+            } else if(k.swipe === 'Y') {
+                k._elHeight= 0;
+                k._chirdren.forEach(function(ele, idx) {
+                    k._elHeight += getStyleValue(ele, 'height');
                 });
-                k.selfParam.el.style.height = k.selfParam._elHeight + "px";
+                k.el.style.height = k._elHeight + "px";
             }
         },
         createNumNav: function () {
             var k = this;
-            k.selfParam.numNav = k.selfParam.nav.querySelector('.cur');
-            k.selfParam.nav.querySelector('.total').innerHTML = k.selfParam._count;
-            k.selfParam.numNav.innerHTML = 1;
+            k.numNav = k.nav.querySelector('.cur');
+            k.nav.querySelector('.total').innerHTML = k._count;
+            k.numNav.innerHTML = 1;
         },
         createNav: function () {
             var k = this;
             var span = null;
-            k.selfParam.nav.innerHTML = '';
-            for(var i = 0; i < k.selfParam._count; i++) {
+            k.nav.innerHTML = '';
+            for(var i = 0; i < k._count; i++) {
                 span = document.createElement('span');
                 if(i == 0) {
                     span.className = "box-size on";
-                    k.selfParam.nav.appendChild(span);
+                    k.nav.appendChild(span);
                 } else {
                     span.className = "box-size";
-                    k.selfParam.nav.appendChild(span);
+                    k.nav.appendChild(span);
                 }
             }
-            k.selfParam.navis = k.selfParam.nav.getElementsByTagName('span');
-            k.selfParam.navis = Array.prototype.slice.call(k.selfParam.navis, 0);
+            k.navis = k.nav.getElementsByTagName('span');
+            k.navis = Array.prototype.slice.call(k.navis, 0);
         },
         automove: function() {//自动滑动到下一个item
             var k = this;
-            k.selfParam._flag =  setInterval(function() {
-                k.methods.next.call(k);
+            k._flag =  setInterval(function() {
+                k.next();
             }, 4e3);
         },
         clear: function() {
             var k = this;
-            clearInterval(k.selfParam._flag);
-            k.selfParam._flag = null;
+            clearInterval(k._flag);
+            k._flag = null;
         },
         touchstart: function(e) {
             var k = this;
             var t = touchEvent.getPoint(e);
-            k.methods.clear.call(k);
-            k.selfParam.move = 0;
-            k.selfParam._pageX = t.x;
-            k.selfParam._pageY = t.y;
-            k.selfParam._fangxiang = '';
-            k.selfParam._pcMoveFlag = false;
+            k.clear();
+            k.move = 0;
+            k._pageX = t.x;
+            k._pageY = t.y;
+            k._fangxiang = '';
+            k._pcMoveFlag = false;
             if (window.PointerEvent || window.MSPointerEvent) {
-                var sleft = k.selfParam.el.style.msTransform || k.selfParam.el.style.transform;
-                k.selfParam._left = getInitPosition(sleft, "x");
-                k.selfParam._top = getInitPosition(sleft, "y");
+                var sleft = k.el.style.msTransform || k.el.style.transform;
+                k._left = getInitPosition(sleft, "x");
+                k._top = getInitPosition(sleft, "y");
             } else {
-                k.selfParam._left = getInitPosition(k.selfParam.el.style.webkitTransform, "x");
-                k.selfParam._top = getInitPosition(k.selfParam.el.style.webkitTransform, "y");
+                k._left = getInitPosition(k.el.style.webkitTransform, "x");
+                k._top = getInitPosition(k.el.style.webkitTransform, "y");
             }
         },
         touchmove: function(e) {
             var k = this;
-            if(k.selfParam._pcMoveFlag) {
+            if(k._pcMoveFlag) {
                 return;
             }
             var t = touchEvent.getPoint(e);
             var px = t.x;
             var py = t.y;
-            var lenX = px - k.selfParam._pageX;
-            var lenY = py - k.selfParam._pageY;
-            if(k.selfParam.swipe === 'X') {
+            var lenX = px - k._pageX;
+            var lenY = py - k._pageY;
+            if(k.swipe === 'X') {
                 if(Math.abs(lenY) > Math.abs(lenX)) {
                     return;
                 }
                 e.preventDefault();
-                k.selfParam.move = lenX;
-                //k.selfParam._isInertia = false;
+                k.move = lenX;
+                //k._isInertia = false;
                 //if(Math.abs(lenX) <= 80) {//小于80，就会有惯性滑动
-                //k.selfParam._isInertia = true;
+                //k._isInertia = true;
                 //}
                 if(lenX > 5 ) {
-                    k.selfParam._fangxiang = "left";
+                    k._fangxiang = "left";
                 } else if (lenX < -5) {
-                    k.selfParam._fangxiang = 'right';
+                    k._fangxiang = 'right';
                 }
-               // console.log(k.selfParam._left+lenX, k.selfParam._left, lenX);
-                setX(k.selfParam.el, k.selfParam._left+lenX, 0);
+               // console.log(k._left+lenX, k._left, lenX);
+                setX(k.el, k._left+lenX, 0);
             } else if(k.swipe === 'Y') {
                 if(Math.abs(lenY) < Math.abs(lenX)) {
                     return;
                 }
                 e.preventDefault();
-                k.selfParam.move = lenY;
-                k.selfParam._isInertia = false;
+                k.move = lenY;
+                k._isInertia = false;
                 // if(Math.abs(lenY) >= 30) {
-                k.selfParam._isInertia = true;
+                k._isInertia = true;
                 //}
                 if(lenY > 5 ) {//top
-                    k.selfParam._fangxiang = "top";
+                    k._fangxiang = "top";
                 } else if (lenY < -5) {//bottom
-                    k.selfParam._fangxiang = 'bottom';
+                    k._fangxiang = 'bottom';
                 }
-                setY(k.selfParam.el, k.selfParam._top+lenY, 0);
+                setY(k.el, k._top+lenY, 0);
             }
         },
         touchend: function(e) {
             var k = this;
-            k.selfParam._pcMoveFlag = true;
-            if(k.selfParam.isNoFullScreen){
-                k.methods.setNewPositionNoScreen.call(k);
+            k._pcMoveFlag = true;
+            if(k.isNoFullScreen){
+                k.setNewPositionNoScreen();
             }else{
-                k.methods.setNewPosition.call(k);
+                k.setNewPosition();
             }
         },
         touchcancel: function(e) {
             var k = this;
-            k.selfParam._pcMoveFlag = true;
-            if(k.selfParam.isNoFullScreen){
-                k.methods.setNewPositionNoScreen.call(k);
+            k._pcMoveFlag = true;
+            if(k.isNoFullScreen){
+                k.setNewPositionNoScreen();
             }else{
-                k.methods.setNewPosition.call(k);
+                k.setNewPosition();
             }
         },
         setNewPosition: function () {
             var k = this;
 
-            if(k.selfParam.swipe === 'X') {
-                //console.log(k.selfParam._fangxiang, k.selfParam._currentIndex);
-                if(k.selfParam._fangxiang === 'left') {
-                    if(k.selfParam._currentIndex === 0) {
-                        setX(k.selfParam.el, 0, k.selfParam._interval);
+            if(k.swipe === 'X') {
+                //console.log(k._fangxiang, k._currentIndex);
+                if(k._fangxiang === 'left') {
+                    if(k._currentIndex === 0) {
+                        setX(k.el, 0, k._interval);
                     } else {
-                        k.methods.prev.call(k);
+                        k.prev();
                     }
-                } else if(k.selfParam._fangxiang === "right") {
-                    if(k.selfParam._currentIndex === k.selfParam._count -1) {
-                        setX(k.selfParam.el, -(k.selfParam._chirdW*(k.selfParam._count-1)), k.selfParam._interval);
+                } else if(k._fangxiang === "right") {
+                    if(k._currentIndex === k._count -1) {
+                        setX(k.el, -(k._chirdW*(k._count-1)), k._interval);
                     } else {
-                        k.methods.next.call(k);
+                        k.next();
                     }
                 } else {
-                    setX(k.selfParam.el, k.selfParam._left, 0);
+                    setX(k.el, k._left, 0);
                 }
             } else if(k.swipe === 'Y') {
-                if(k.selfParam._fangxiang === 'top') {
-                    if(k.selfParam._currentIndex === 0) {
-                        setY(k.selfParam.el, 0, k.selfParam._interval);
+                if(k._fangxiang === 'top') {
+                    if(k._currentIndex === 0) {
+                        setY(k.el, 0, k._interval);
                     } else {
-                        k.methods.prev.call(k);
+                        k.prev();
                     }
-                } else if(k.selfParam._fangxiang === "bottom") {
-                    if(k.selfParam._currentIndex === k.selfParam._count -1) {
-                        setY(k.selfParam.el, -(k.selfParam._chirdH*(k.selfParam._count-1)), k.selfParam._interval);
+                } else if(k._fangxiang === "bottom") {
+                    if(k._currentIndex === k._count -1) {
+                        setY(k.el, -(k._chirdH*(k._count-1)), k._interval);
                     } else {
-                        k.methods.next.call(k);
+                        k.next();
                     }
                 } else {
-                    setY(k.selfParam.el, k.selfParam._top, 0);
+                    setY(k.el, k._top, 0);
                 }
             }
-            k.methods.automove.call(k);
+            k.automove();
         },
         setNewPositionNoScreen: function (e) { //isNoFullScreen
 
             var k = this, smallest;
             if (window.PointerEvent || window.MSPointerEvent) {
-                var sleft = k.selfParam.el.style.msTransform || k.selfParam.el.style.transform;
+                var sleft = k.el.style.msTransform || k.el.style.transform;
                 k.left = getInitPosition(sleft, "x");
                 k.top = getInitPosition(sleft, "y");
             } else {
-                k.left = getInitPosition(k.selfParam.el.style.webkitTransform, "x");
-                k.top = getInitPosition(k.selfParam.el.style.webkitTransform, "y");
+                k.left = getInitPosition(k.el.style.webkitTransform, "x");
+                k.top = getInitPosition(k.el.style.webkitTransform, "y");
             }
-            if(k.selfParam.swipe === 'X') {
-                if(k.selfParam.fangxiang === 'left') {
+            if(k.swipe === 'X') {
+                if(k.fangxiang === 'left') {
 
-                    if( k.selfParam._left >=0) {
-                        setX(k.selfParam.el, 0, k.selfParam._interval);
+                    if( k._left >=0) {
+                        setX(k.el, 0, k._interval);
                     } else {
-                        if(k.selfParam._isInertia) {
-                            k.selfParam._left +=k.selfParam._inertiaLength;
-                            if(k.selfParam._left >=0) {
-                                setX(k.selfParam.el, 0, k.selfParam._interval);
+                        if(k._isInertia) {
+                            k._left +=k._inertiaLength;
+                            if(k._left >=0) {
+                                setX(k.el, 0, k._interval);
                             } else {
-                                setX(k.selfParam.el, k.selfParam._left, k.selfParam._interval);
+                                setX(k.el, k._left, k._interval);
                             }
                         }
 
                     }
-                } else if(k.selfParam._fangxiang === "right") {
-                    smallest   = -(k.selfParam._elWidth - window.innerWidth);
-                    if( k.selfParam._left <= smallest) {
-                        setX(k.selfParam.el, smallest, k.selfParam._interval);
+                } else if(k._fangxiang === "right") {
+                    smallest   = -(k._elWidth - window.innerWidth);
+                    if( k._left <= smallest) {
+                        setX(k.el, smallest, k._interval);
                     } else {
-                        if(k.selfParam._isInertia) {
-                            k.selfParam._left -= k.selfParam._inertiaLength;
-                            if (k.selfParam._left <= smallest) {
-                                setX(k.selfParam.el, smallest, k.selfParam._interval);
+                        if(k._isInertia) {
+                            k._left -= k._inertiaLength;
+                            if (k._left <= smallest) {
+                                setX(k.el, smallest, k._interval);
                             } else {
-                                setX(k.selfParam.el, k.selfParam._left, k.selfParam._interval);
+                                setX(k.el, k._left, k._interval);
                             }
                         }
                     }
                 } else {
-                    setX(k.selfParam.el, k.selfParam._left, 0);
+                    setX(k.el, k._left, 0);
                 }
-            } else if(k.selfParam.swipe === 'Y') {
-                if(k.selfParam._fangxiang === 'top') {
+            } else if(k.swipe === 'Y') {
+                if(k._fangxiang === 'top') {
 
-                    if( k.selfParam._top >=0) {
-                        setY(k.selfParam.el, 0, k.selfParam._interval);
+                    if( k._top >=0) {
+                        setY(k.el, 0, k._interval);
                     }
-                } else if(k.selfParam._fangxiang === "bottom") {
-                    if( k.selfParam._left<= -(k.selfParam._elHeight-window.innerHeight)) {
-                        setY(k.selfParam.el, -(k.selfParam._elHeight-window.innerHeight), k.selfParam._interval);
+                } else if(k._fangxiang === "bottom") {
+                    if( k._left<= -(k._elHeight-window.innerHeight)) {
+                        setY(k.el, -(k._elHeight-window.innerHeight), k._interval);
                     }
 
                 } else {
-                    setY(k.selfParam.el, k.selfParam._top, 0);
+                    setY(k.el, k._top, 0);
                 }
             }
         },
         next: function() {
-            this.methods.go.call(this, this.selfParam._currentIndex + 1);
+            this.go(this._currentIndex + 1);
         },
         prev: function() {
-            this.methods.go.call(this, this.selfParam._currentIndex - 1);
+            this.go(this._currentIndex - 1);
         },
         go: function(idx) {
             var len = 0;//肯定是负值， 最大值为 0，最小值为 -((this.count - 1) * this.chirdW)
-            if (idx === this.selfParam._currentIndex) {
+            if (idx === this._currentIndex) {
                 return;
             }
-            if (idx >= this.selfParam._count) {
+            if (idx >= this._count) {
                 idx = 0;
             }
             if (idx < 0) {
-                idx = this.selfParam._count - 1;
+                idx = this._count - 1;
             }
-            this.selfParam._currentIndex = idx;
-            if(this.selfParam.swipe === 'X') {
-                len = -(idx * this.selfParam._chirdW);
-                setX(this.selfParam.el, len, this.selfParam._interval);
-            } else if(this.selfParam.swipe === 'Y') {
-                len = -(idx * this.selfParam._chirdH);
-                setY(this.selfParam.el, len, this.selfParam._interval);
+            this._currentIndex = idx;
+            if(this.swipe === 'X') {
+                len = -(idx * this._chirdW);
+                setX(this.el, len, this._interval);
+            } else if(this.swipe === 'Y') {
+                len = -(idx * this._chirdH);
+                setY(this.el, len, this._interval);
             }
-            if(this.selfParam.nav) {
-                if( this.selfParam.navType === 'normal') {
-                    this.methods.changeNavi.call(k);  //2017.3.6 xly
+            if(this.nav) {
+                if( this.navType === 'normal') {
+                    this.changeNavi();  //2017.3.6 xly
                 } else {
-                    if(this.selfParam.numNav) {
-                        this.selfParam.numNav.innerHTML = (this.selfParam._currentIndex+1);
+                    if(this.numNav) {
+                        this.numNav.innerHTML = (this._currentIndex+1);
                     }
                 }
 
@@ -1144,10 +1180,10 @@ var Slide = new BaseComp({
         },
         changeNavi: function () {
             var k = this;
-            k.selfParam.navis.forEach(function(e) {
+            k.navis.forEach(function(e) {
                 e.className = 'box-size';
             });
-            k.selfParam.navis[k.selfParam._currentIndex].className = 'box-size on';
+            k.navis[k._currentIndex].className = 'box-size on';
         },
     }
 })

@@ -1,4 +1,4 @@
-//vm类, 
+//vm类,  已废弃的文件，请使用 newBaseComp.js 或 newBaseCompNoLib.js 代替
 
 var extend = require('./util/extend');
 var extendClass = require('./util/extendClass');
@@ -6,6 +6,9 @@ var eventBase = require('./eventBase');
 var tplObj = require('./util/tplFunc');
 var Log = require('./util/log');
 /**
+ 已废弃的文件，请使用 newBaseComp.js 或 newBaseCompNoLib.js 代替
+
+
 	opt说明：
 	element: 容器Dom元素（jquery对象或zepto对象）
 	selfParam:存放自定义属性的，对象实例自己的属性和自己的方法（钩子方法可以放在这里）

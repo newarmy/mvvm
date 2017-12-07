@@ -11,14 +11,32 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<meta name="format-detection" content="telephone=no">
-	
+	<style>
+		*{padding: 0;margin: 0;}
+		ul,li{    list-style:none;}
+		#tabH li{
+			background:blue;
+			color:#fff;
+			font-size:20px;
+		}
+		#tabH .cur{
+			background:red;
+		}
+		#tabC div{
+			display: none;
+			font-size:25px;
+		}
+		#tabC .cur{
+			display: block;
+		}
+	</style>
 </head>
 <body >
-	<ul class='box'>
-	</ul>
-		<script src="./js/jquery.js"></script>
+	<div class='box'>
+	</div>
+		<script src="../js/jquery.js"></script>
 		<!--<script src="./js/main.js"></script> -->
-		<script src="./js/main.js"></script>
+		<script src="../js/tabMain.js"></script>
 	</div>
 </body>
 </html>
