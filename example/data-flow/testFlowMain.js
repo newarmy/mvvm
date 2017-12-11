@@ -1,0 +1,97 @@
+
+var Vue = require('../../src/newBaseComp');
+var t1 = require('./flowTemplate/child1.html');
+var t2 = require('./flowTemplate/child2.html');
+var tp = require('./flowTemplate/parent.html');
+var store = require('./store');
+
+// 子组件1
+var c1obj = new Vue({
+    template: t1, //模板文件
+    isDev: true, //输出流程标识
+    // 事件
+    events: {
+        'click p': 'show'
+    },
+    // 初始操作
+    init: function () {
+        var k = this;
+        // 监听store里的tab1的变化
+        k.store.on('tab1', function(data) {
+            //alert(data);
+            k.element.html(data.content);
+        })
+    },
+    //事件中的回调方法
+    methods: {
+        show: function(e, that){
+            alert(that.html());
+        }
+    }
+
+})
+// 子组件2
+var c2obj = new Vue({
+    template: t2,
+    isDev: true,
+    events: {
+        'click': 'show'
+    },
+    init: function () {
+      var k = this;
+        // 监听store里的tab2的变化
+      k.store.on('tab2', function(data) {
+          k.element.html(data.content);
+      })
+    },
+    methods: {
+        show: function(e){
+            alert(e.target.innerHTML);
+        }
+    }
+});
+
+
+
+//父组件
+var pobj = new Vue({
+    //组件容器dom
+	element: $('.box1'),
+    template: tp,
+    //数据流控制
+    store: store,
+    //注册子组件
+    childComponents: {
+    	'comp1':c1obj,
+		'comp2':c2obj
+	},
+    isDev: true,
+    init: function() {
+        var k = this;
+        k.tab = k.element.find('li');
+        k.con = k.element.find('.c');
+        k.list = k.con.find('.d');
+        k.tab.removeClass('cur').eq(0).addClass('cur');
+        k.list.removeClass('cur').eq(0).addClass('cur');
+        k.store.dispatch('changeTab1', {id: 'request 0'})
+    },
+    events: {
+        'click li': 'show'
+    },
+    methods: {
+        show: function(e, that){
+            var k = this;
+            var i = that.index();
+            if(i === 0) {
+                k.store.dispatch('changeTab1', {id: 'request 1'})
+            } else {
+                k.store.dispatch('changeTab2',{id: 'request 2'})
+            }
+            k.tab.removeClass('cur').eq(i).addClass('cur');
+            k.list.removeClass('cur').eq(i).addClass('cur');
+        }
+    }
+})
+
+//添加到页面中
+pobj.mounted();

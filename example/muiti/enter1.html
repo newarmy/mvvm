@@ -1,9 +1,8 @@
 <!doctype html>
-<html lang="zh-CN" style="font-size:100px;">
+<html lang="zh-CN" style="font-size:30px;">
 <head >
-	<title>test tab</title>
+	<title>零零购车首页</title>
 	<meta charset="UTF-8">
-	<meta id="vp" name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 	<meta name="apple-touch-fullscreen" content="YES" />
@@ -13,30 +12,37 @@
 	<meta name="format-detection" content="telephone=no">
 	<style>
 		*{padding: 0;margin: 0;}
+		ul{overflow: hidden}
 		ul,li{    list-style:none;}
-		#tabH li{
+		ul li{
 			background:blue;
 			color:#fff;
 			font-size:20px;
+			float:left;
+			padding:10px;
 		}
-		#tabH .cur{
+		ul .cur{
 			background:red;
 		}
-		#tabC div{
+		.c{
+			background: yellow;
+			height:160px;
+		}
+		.c div{
 			display: none;
 			font-size:25px;
 		}
-		#tabC .cur{
+		.c .cur{
 			display: block;
 		}
 	</style>
 </head>
 <body >
-	<div class='box'>
+	<div class='box1'>
 	</div>
-		<script src="../js/jquery.js"></script>
+		<script src="../../js/jquery.js"></script>
 		<!--<script src="./js/main.js"></script> -->
-		<script src="../js/tabMain.js"></script>
+		<script src="../../js/cMain.js"></script>
 	</div>
 </body>
 </html>

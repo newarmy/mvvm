@@ -7,9 +7,9 @@ var path = require('path');
 module.exports ={
 	entry: {
 		main: './test/main.js',
-		tabMain: './test/tabMain.js',
-        cMain: './test/combinationMain.js',
-		fMain: './test/testFlowMain.js',
+		tabMain: './example/single/singleComp.js',
+        cMain: './example/muiti/combinationMain.js',
+		fMain: './example/data-flow/testFlowMain.js',
         event: './test/event/eventTest.js',
         bind: './test/bind/bindTest.js',
 		slide: './test/slide/slidenew.js'

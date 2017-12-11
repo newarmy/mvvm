@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 24);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -172,13 +172,13 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 24:
+/***/ 29:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Created by xinjundong on 2017/12/4.
  */
-var baseComp = __webpack_require__(5)
+var baseComp = __webpack_require__(3)
 
 var dom1 = $('.test1');
 
@@ -207,68 +207,6 @@ var comp = new baseComp({
 /***/ }),
 
 /***/ 3:
-/***/ (function(module, exports) {
-
-
-/**
-* template
-*/
-
-var template = {
-	startTag: "<%",
-	endTag: "%>",
-	parse: function (str) {
-		var reg = /^=(.+)/;//来判断是变量还是语句
-		var startArr = str.split(this.startTag);//开始标识符分割的数组
-		var endArr;//结束标识符分割的数组
-		var variable;
-		var varArr;//
-		var html = 'var data = arguments[0];  var str=""; with(data){';
-		var temp;
-		for(var i = 0, l = startArr.length; i < l; i++) {
-			temp = startArr[i];
-			 endArr = temp.split(this.endTag);
-			if(endArr.length == 1) {//纯字符串
-				html+='str+=\''+endArr[0]+'\';';
-			} else {//有变量或语句
-				variable = endArr[0];
-				varArr = variable.match(reg);
-				if(varArr && varArr.length==2) {//是变量
-					
-					html +='str+='+ varArr[1]+';'; 
-					html += 'str+=\''+endArr[1]+'\';';
-				} else {
-					html += endArr[0];//是语句
-					html += 'str+=\''+endArr[1]+'\';';
-				}
-			}
-		}
-		html+='} return str;';
-		//console.log(html);
-		return new Function( html);
-	}
-};
-module.exports = template;
-
-/***/ }),
-
-/***/ 4:
-/***/ (function(module, exports) {
-
-
-/**
-* 日志类
-*/
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
-	log: console.log,
-	error: console.error
-};
-
-/***/ }),
-
-/***/ 5:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
@@ -276,8 +214,8 @@ module.exports = {
 var extend = __webpack_require__(0);
 var extendClass = __webpack_require__(2);
 var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(3);
-var Log = __webpack_require__(4);
+var tplObj = __webpack_require__(4);
+var Log = __webpack_require__(5);
 /**
  组件强依赖zepto.js 或 jquery.js
 
@@ -411,6 +349,8 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
+           // console.log(k.element);
+            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -613,21 +553,94 @@ baseVM.extend = extendClass;
 
 module.exports =  function(opt){
     var NewClass = baseVM.extend({
+        // 组件的初始函数
         init: opt.init,
+        // 事件的回调函数 和 一些常规函数 （会代理到组件实例中）
         methods: opt.methods,
+        // 事件列表， 事件都绑定到element中
         events: opt.events
     });
     return new NewClass({
+        // 组件容器dom
         element: opt.element,
+        // 自定义的属性，（会代理到组件实例中）
         selfParam: opt.selfParam,
+        // 子组件列表
         childComponents: opt.childComponents,
+        // 组件间通信用的
         stateBus: opt.stateBus,
+        // 组件模板
         tpl: opt.template,
+        // 跟模板相关的数据
         data: opt.data,
+        // 数据流
         store: opt.store,
+        // 调试用的标志位
         isDev: opt.isDev
     });
 }
+
+/***/ }),
+
+/***/ 4:
+/***/ (function(module, exports) {
+
+
+/**
+* template
+*/
+
+var template = {
+	startTag: "<%",
+	endTag: "%>",
+	parse: function (str) {
+		var reg = /^=(.+)/;//来判断是变量还是语句
+		var startArr = str.split(this.startTag);//开始标识符分割的数组
+		var endArr;//结束标识符分割的数组
+		var variable;
+		var varArr;//
+		var html = 'var data = arguments[0];  var str=""; with(data){';
+		var temp;
+		for(var i = 0, l = startArr.length; i < l; i++) {
+			temp = startArr[i];
+			 endArr = temp.split(this.endTag);
+			if(endArr.length == 1) {//纯字符串
+				html+='str+=\''+endArr[0]+'\';';
+			} else {//有变量或语句
+				variable = endArr[0];
+				varArr = variable.match(reg);
+				if(varArr && varArr.length==2) {//是变量
+					
+					html +='str+='+ varArr[1]+';'; 
+					html += 'str+=\''+endArr[1]+'\';';
+				} else {
+					html += endArr[0];//是语句
+					html += 'str+=\''+endArr[1]+'\';';
+				}
+			}
+		}
+		html+='} return str;';
+		//console.log(html);
+		return new Function( html);
+	}
+};
+module.exports = template;
+
+/***/ }),
+
+/***/ 5:
+/***/ (function(module, exports) {
+
+
+/**
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
 
 /***/ })
 

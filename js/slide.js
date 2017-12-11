@@ -63,11 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 28);
+/******/ 	return __webpack_require__(__webpack_require__.s = 32);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ (function(module, exports) {
 
 
@@ -98,7 +99,8 @@ module.exports = function (obj) {
 
 
 /***/ }),
-/* 1 */
+
+/***/ 1:
 /***/ (function(module, exports) {
 
 //�Զ����¼�����
@@ -134,238 +136,8 @@ module.exports = {
 };
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
 
-
-/**
-* 继承工具方法
-*/
-var extend = __webpack_require__(0);
-module.exports = function (protoProps, staticProps) {
-	var parent = this;
-	var child;
-	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
-		child = protoProps.prototype.constructor;
-	} else {
-		child = function () {
-			return parent.apply(this, arguments);
-		};
-	}
-	//拷贝静态属性
-	extend(child, parent, staticProps);
-	//子类与父类之间的代理，使子类不能修改父类方法
-	var proxy = function() {
-		this.constructor = child;
-	};
-	proxy.prototype = parent.prototype;
-	child.prototype = new proxy();
-	
-	//拷贝原型属性
-	if (protoProps) extend(child.prototype, protoProps);
-	
-	return child;
-};
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-
-/**
-* template
-*/
-
-var template = {
-	startTag: "<%",
-	endTag: "%>",
-	parse: function (str) {
-		var reg = /^=(.+)/;//来判断是变量还是语句
-		var startArr = str.split(this.startTag);//开始标识符分割的数组
-		var endArr;//结束标识符分割的数组
-		var variable;
-		var varArr;//
-		var html = 'var data = arguments[0];  var str=""; with(data){';
-		var temp;
-		for(var i = 0, l = startArr.length; i < l; i++) {
-			temp = startArr[i];
-			 endArr = temp.split(this.endTag);
-			if(endArr.length == 1) {//纯字符串
-				html+='str+=\''+endArr[0]+'\';';
-			} else {//有变量或语句
-				variable = endArr[0];
-				varArr = variable.match(reg);
-				if(varArr && varArr.length==2) {//是变量
-					
-					html +='str+='+ varArr[1]+';'; 
-					html += 'str+=\''+endArr[1]+'\';';
-				} else {
-					html += endArr[0];//是语句
-					html += 'str+=\''+endArr[1]+'\';';
-				}
-			}
-		}
-		html+='} return str;';
-		//console.log(html);
-		return new Function( html);
-	}
-};
-module.exports = template;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-
-/**
-* 日志类
-*/
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
-	log: console.log,
-	error: console.error
-};
-
-/***/ }),
-/* 5 */,
-/* 6 */
-/***/ (function(module, exports) {
-
-/**
- * Created by xinjundong on 2017/12/4.
- */
-// 事件回调方法缓存到 __EventCallback__
-window.__EventCallback__ = {}
-// 事件类型管理对象
-window.__EventTypeManager__ = {}
-
-
-/**
- * 获取一个随机字符串
- * */
-function getRandomStr (str) {
-    return str + '_' + String((new Date()).getTime() * Math.random()).substr(0, 13).replace('.', 'a')
-}
-
-function getCurrentSelector(tar, type) {
-    var currentClassName;
-    switch(type) {
-        case 1:
-            currentClassName = tar.className;
-            break;
-        case 2:
-            currentClassName = tar.id;
-            break;
-        case 3:
-            currentClassName = tar.tagName.toLowerCase();
-
-    }
-    return currentClassName;
-}
-function getCurrentTarget(tar, className, classType){
-    var currentClassName = getCurrentSelector(tar, classType);
-    className = className.replace(/(^\s*)|(\s*$)/g, '');
-    while(currentClassName.indexOf(className) === -1) {
-        if(tar.flag) {
-            return null;
-        }
-        tar = tar.parentNode;
-        currentClassName = getCurrentSelector(tar, classType);
-    }
-    return tar;
-}
-
-module.exports = {
-    addEvent: function (dom, type, func) {
-       var callbackKey = getRandomStr(type);
-       window.__EventCallback__[callbackKey] = func;
-       if(!window.__EventTypeManager__[type]) {
-           window.__EventTypeManager__[type] = []
-       }
-       window.__EventTypeManager__[type].push(window.__EventCallback__[callbackKey]);
-       dom.addEventListener(type, window.__EventCallback__[callbackKey])
-    },
-    removeEvent: function (dom, type, func) {
-        if(func) {
-            dom.removeEventListener(type, func);
-            return;
-        }
-        for (var eventType in window.__EventTypeManager__) {
-            if(eventType === type) {
-                var eventArr = window.__EventTypeManager__[eventType];
-                for(var i = 0, len = eventArr.length; i < len; i++) {
-                    var funci = eventArr[i];
-                    dom.removeEventListener(eventType, funci);
-                    funci = null;
-                }
-                window.__EventTypeManager__[eventType] = null;
-                eventArr = null;
-            }
-
-        }
-    },
-    removeAllEvent: function(dom) {
-        for (var type in window.__EventTypeManager__) {
-            var eventArr = window.__EventTypeManager__[type];
-            for(var i = 0, len = eventArr.length; i < len; i++) {
-                var funci = eventArr[i];
-                dom.removeEventListener(type, funci);
-                funci = null;
-            }
-            window.__EventTypeManager__[type] = null;
-            eventArr = null;
-        }
-    },
-    addProxyEvent: function (dom, type, selector, func) {
-        var k = this;
-        dom.flag = "parent";
-        var className;
-        // 1: class, 2: id, 3: tag
-        var selectorType = 3
-        if (selector.indexOf('.') === 0) {
-            selectorType = 1;
-            className = selector.replace('.', '');
-        } else if(selector.indexOf('#') === 0) {
-            selectorType = 2;
-            className = selector.replace('#', '');
-        } else {
-            className = selector;
-        }
-        var proxyFunc = function(e) {
-            var t = e.target;
-            var tar = getCurrentTarget(t, className, selectorType);
-            var eventObj = {
-                target: e.target,
-                type: e.type,
-                currentTarget: tar,
-                preventDefault: function() {
-                    e.preventDefault()
-                },
-                stopPropagation: function() {
-                    e.stopPropagation()
-                }
-            };
-            func(eventObj);
-        }
-        k.addEvent(dom, type, proxyFunc)
-    }
-};
-
-/***/ }),
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */
+/***/ 18:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
@@ -373,8 +145,8 @@ module.exports = {
 var extend = __webpack_require__(0);
 var extendClass = __webpack_require__(2);
 var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(3);
-var Log = __webpack_require__(4);
+var tplObj = __webpack_require__(4);
+var Log = __webpack_require__(5);
 var EVENT = __webpack_require__(6)
 /**
  不依赖zepto.js 或 jquery.js时，使用此基类
@@ -728,7 +500,8 @@ module.exports =  function(opt){
 }
 
 /***/ }),
-/* 20 */
+
+/***/ 19:
 /***/ (function(module, exports) {
 
   //touch事件相关
@@ -770,21 +543,50 @@ module.exports =  function(opt){
 
 
 /***/ }),
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */
+
+/***/ 2:
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+* 继承工具方法
+*/
+var extend = __webpack_require__(0);
+module.exports = function (protoProps, staticProps) {
+	var parent = this;
+	var child;
+	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
+		child = protoProps.prototype.constructor;
+	} else {
+		child = function () {
+			return parent.apply(this, arguments);
+		};
+	}
+	//拷贝静态属性
+	extend(child, parent, staticProps);
+	//子类与父类之间的代理，使子类不能修改父类方法
+	var proxy = function() {
+		this.constructor = child;
+	};
+	proxy.prototype = parent.prototype;
+	child.prototype = new proxy();
+	
+	//拷贝原型属性
+	if (protoProps) extend(child.prototype, protoProps);
+	
+	return child;
+};
+
+/***/ }),
+
+/***/ 32:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Created by xinjundong on 2017/12/4.
  */
-var BaseComp = __webpack_require__(19)
-var touchEvent = __webpack_require__(20)
+var BaseComp = __webpack_require__(18)
+var touchEvent = __webpack_require__(19)
 var start = touchEvent.touchStart;
 var move = touchEvent.touchMove;
 var cancel = touchEvent.touchCancel;
@@ -1188,5 +990,193 @@ var Slide = new BaseComp({
     }
 })
 
+/***/ }),
+
+/***/ 4:
+/***/ (function(module, exports) {
+
+
+/**
+* template
+*/
+
+var template = {
+	startTag: "<%",
+	endTag: "%>",
+	parse: function (str) {
+		var reg = /^=(.+)/;//来判断是变量还是语句
+		var startArr = str.split(this.startTag);//开始标识符分割的数组
+		var endArr;//结束标识符分割的数组
+		var variable;
+		var varArr;//
+		var html = 'var data = arguments[0];  var str=""; with(data){';
+		var temp;
+		for(var i = 0, l = startArr.length; i < l; i++) {
+			temp = startArr[i];
+			 endArr = temp.split(this.endTag);
+			if(endArr.length == 1) {//纯字符串
+				html+='str+=\''+endArr[0]+'\';';
+			} else {//有变量或语句
+				variable = endArr[0];
+				varArr = variable.match(reg);
+				if(varArr && varArr.length==2) {//是变量
+					
+					html +='str+='+ varArr[1]+';'; 
+					html += 'str+=\''+endArr[1]+'\';';
+				} else {
+					html += endArr[0];//是语句
+					html += 'str+=\''+endArr[1]+'\';';
+				}
+			}
+		}
+		html+='} return str;';
+		//console.log(html);
+		return new Function( html);
+	}
+};
+module.exports = template;
+
+/***/ }),
+
+/***/ 5:
+/***/ (function(module, exports) {
+
+
+/**
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
+
+/***/ }),
+
+/***/ 6:
+/***/ (function(module, exports) {
+
+/**
+ * Created by xinjundong on 2017/12/4.
+ */
+// 事件回调方法缓存到 __EventCallback__
+window.__EventCallback__ = {}
+// 事件类型管理对象
+window.__EventTypeManager__ = {}
+
+
+/**
+ * 获取一个随机字符串
+ * */
+function getRandomStr (str) {
+    return str + '_' + String((new Date()).getTime() * Math.random()).substr(0, 13).replace('.', 'a')
+}
+
+function getCurrentSelector(tar, type) {
+    var currentClassName;
+    switch(type) {
+        case 1:
+            currentClassName = tar.className;
+            break;
+        case 2:
+            currentClassName = tar.id;
+            break;
+        case 3:
+            currentClassName = tar.tagName.toLowerCase();
+
+    }
+    return currentClassName;
+}
+function getCurrentTarget(tar, className, classType){
+    var currentClassName = getCurrentSelector(tar, classType);
+    className = className.replace(/(^\s*)|(\s*$)/g, '');
+    while(currentClassName.indexOf(className) === -1) {
+        if(tar.flag) {
+            return null;
+        }
+        tar = tar.parentNode;
+        currentClassName = getCurrentSelector(tar, classType);
+    }
+    return tar;
+}
+
+module.exports = {
+    addEvent: function (dom, type, func) {
+       var callbackKey = getRandomStr(type);
+       window.__EventCallback__[callbackKey] = func;
+       if(!window.__EventTypeManager__[type]) {
+           window.__EventTypeManager__[type] = []
+       }
+       window.__EventTypeManager__[type].push(window.__EventCallback__[callbackKey]);
+       dom.addEventListener(type, window.__EventCallback__[callbackKey])
+    },
+    removeEvent: function (dom, type, func) {
+        if(func) {
+            dom.removeEventListener(type, func);
+            return;
+        }
+        for (var eventType in window.__EventTypeManager__) {
+            if(eventType === type) {
+                var eventArr = window.__EventTypeManager__[eventType];
+                for(var i = 0, len = eventArr.length; i < len; i++) {
+                    var funci = eventArr[i];
+                    dom.removeEventListener(eventType, funci);
+                    funci = null;
+                }
+                window.__EventTypeManager__[eventType] = null;
+                eventArr = null;
+            }
+
+        }
+    },
+    removeAllEvent: function(dom) {
+        for (var type in window.__EventTypeManager__) {
+            var eventArr = window.__EventTypeManager__[type];
+            for(var i = 0, len = eventArr.length; i < len; i++) {
+                var funci = eventArr[i];
+                dom.removeEventListener(type, funci);
+                funci = null;
+            }
+            window.__EventTypeManager__[type] = null;
+            eventArr = null;
+        }
+    },
+    addProxyEvent: function (dom, type, selector, func) {
+        var k = this;
+        dom.flag = "parent";
+        var className;
+        // 1: class, 2: id, 3: tag
+        var selectorType = 3
+        if (selector.indexOf('.') === 0) {
+            selectorType = 1;
+            className = selector.replace('.', '');
+        } else if(selector.indexOf('#') === 0) {
+            selectorType = 2;
+            className = selector.replace('#', '');
+        } else {
+            className = selector;
+        }
+        var proxyFunc = function(e) {
+            var t = e.target;
+            var tar = getCurrentTarget(t, className, selectorType);
+            var eventObj = {
+                target: e.target,
+                type: e.type,
+                currentTarget: tar,
+                preventDefault: function() {
+                    e.preventDefault()
+                },
+                stopPropagation: function() {
+                    e.stopPropagation()
+                }
+            };
+            func(eventObj);
+        }
+        k.addEvent(dom, type, proxyFunc)
+    }
+};
+
 /***/ })
-/******/ ]);
+
+/******/ });

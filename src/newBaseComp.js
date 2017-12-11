@@ -138,6 +138,8 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
+           // console.log(k.element);
+            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -340,18 +342,29 @@ baseVM.extend = extendClass;
 
 module.exports =  function(opt){
     var NewClass = baseVM.extend({
+        // 组件的初始函数
         init: opt.init,
+        // 事件的回调函数 和 一些常规函数 （会代理到组件实例中）
         methods: opt.methods,
+        // 事件列表， 事件都绑定到element中
         events: opt.events
     });
     return new NewClass({
+        // 组件容器dom
         element: opt.element,
+        // 自定义的属性，（会代理到组件实例中）
         selfParam: opt.selfParam,
+        // 子组件列表
         childComponents: opt.childComponents,
+        // 组件间通信用的
         stateBus: opt.stateBus,
+        // 组件模板
         tpl: opt.template,
+        // 跟模板相关的数据
         data: opt.data,
+        // 数据流
         store: opt.store,
+        // 调试用的标志位
         isDev: opt.isDev
     });
 }

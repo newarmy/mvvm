@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 30);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -169,66 +169,6 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports) {
-
-
-/**
-* template
-*/
-
-var template = {
-	startTag: "<%",
-	endTag: "%>",
-	parse: function (str) {
-		var reg = /^=(.+)/;//来判断是变量还是语句
-		var startArr = str.split(this.startTag);//开始标识符分割的数组
-		var endArr;//结束标识符分割的数组
-		var variable;
-		var varArr;//
-		var html = 'var data = arguments[0];  var str=""; with(data){';
-		var temp;
-		for(var i = 0, l = startArr.length; i < l; i++) {
-			temp = startArr[i];
-			 endArr = temp.split(this.endTag);
-			if(endArr.length == 1) {//纯字符串
-				html+='str+=\''+endArr[0]+'\';';
-			} else {//有变量或语句
-				variable = endArr[0];
-				varArr = variable.match(reg);
-				if(varArr && varArr.length==2) {//是变量
-					
-					html +='str+='+ varArr[1]+';'; 
-					html += 'str+=\''+endArr[1]+'\';';
-				} else {
-					html += endArr[0];//是语句
-					html += 'str+=\''+endArr[1]+'\';';
-				}
-			}
-		}
-		html+='} return str;';
-		//console.log(html);
-		return new Function( html);
-	}
-};
-module.exports = template;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-
-/**
-* 日志类
-*/
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
-	log: console.log,
-	error: console.error
-};
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
@@ -236,8 +176,8 @@ module.exports = {
 var extend = __webpack_require__(0);
 var extendClass = __webpack_require__(2);
 var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(3);
-var Log = __webpack_require__(4);
+var tplObj = __webpack_require__(4);
+var Log = __webpack_require__(5);
 /**
  组件强依赖zepto.js 或 jquery.js
 
@@ -371,6 +311,8 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
+           // console.log(k.element);
+            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -573,48 +515,176 @@ baseVM.extend = extendClass;
 
 module.exports =  function(opt){
     var NewClass = baseVM.extend({
+        // 组件的初始函数
         init: opt.init,
+        // 事件的回调函数 和 一些常规函数 （会代理到组件实例中）
         methods: opt.methods,
+        // 事件列表， 事件都绑定到element中
         events: opt.events
     });
     return new NewClass({
+        // 组件容器dom
         element: opt.element,
+        // 自定义的属性，（会代理到组件实例中）
         selfParam: opt.selfParam,
+        // 子组件列表
         childComponents: opt.childComponents,
+        // 组件间通信用的
         stateBus: opt.stateBus,
+        // 组件模板
         tpl: opt.template,
+        // 跟模板相关的数据
         data: opt.data,
+        // 数据流
         store: opt.store,
+        // 调试用的标志位
         isDev: opt.isDev
     });
 }
 
 /***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+
+/**
+* template
+*/
+
+var template = {
+	startTag: "<%",
+	endTag: "%>",
+	parse: function (str) {
+		var reg = /^=(.+)/;//来判断是变量还是语句
+		var startArr = str.split(this.startTag);//开始标识符分割的数组
+		var endArr;//结束标识符分割的数组
+		var variable;
+		var varArr;//
+		var html = 'var data = arguments[0];  var str=""; with(data){';
+		var temp;
+		for(var i = 0, l = startArr.length; i < l; i++) {
+			temp = startArr[i];
+			 endArr = temp.split(this.endTag);
+			if(endArr.length == 1) {//纯字符串
+				html+='str+=\''+endArr[0]+'\';';
+			} else {//有变量或语句
+				variable = endArr[0];
+				varArr = variable.match(reg);
+				if(varArr && varArr.length==2) {//是变量
+					
+					html +='str+='+ varArr[1]+';'; 
+					html += 'str+=\''+endArr[1]+'\';';
+				} else {
+					html += endArr[0];//是语句
+					html += 'str+=\''+endArr[1]+'\';';
+				}
+			}
+		}
+		html+='} return str;';
+		//console.log(html);
+		return new Function( html);
+	}
+};
+module.exports = template;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+
+/**
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
+
+/***/ }),
 /* 6 */,
-/* 7 */,
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+//vm类, 
+
+var Flow = __webpack_require__(24);
+var ajax = __webpack_require__(20);
+//数据流控制类
+var flow = Flow({
+    state: {
+        tab1: {},
+        tab2: {}
+    },
+    actions: {
+        changeTab1: function(data) {
+            var k = this;
+            // 请求数据
+            ajax(data, function(res) {
+                k.commit('tab1', res)
+            })
+        },
+        changeTab2: function(data) {
+            var k = this;
+            // 请求数据
+            ajax(data, function(res) {
+                k.commit('tab2', res)
+            })
+        }
+    }
+});
+
+module.exports = flow;
+
+
+
+/***/ }),
 /* 8 */,
 /* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第一子组件\r\n</div>"
 
 /***/ }),
-/* 13 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 14 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
-/* 15 */
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */
+/***/ (function(module, exports) {
+
+// 模拟异步请求
+var ajax = function (data, cb) {
+    setTimeout( function () {
+        cb({content: 'test tab '+ data.id})
+    }, 1000)
+}
+
+module.exports = ajax;
+
+
+/***/ }),
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -665,32 +735,16 @@ module.exports = function (opt) {
 };
 
 /***/ }),
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
 /* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-//vm类, 
-/**
 
-*/
-var Vue = __webpack_require__(5);
-var Flow = __webpack_require__(15);
-var t1 = __webpack_require__(12);
-var t2 = __webpack_require__(13);
-var tp = __webpack_require__(14);
+var Vue = __webpack_require__(3);
+var t1 = __webpack_require__(10);
+var t2 = __webpack_require__(11);
+var tp = __webpack_require__(12);
+var store = __webpack_require__(7);
 
 // 子组件1
 var c1obj = new Vue({
@@ -703,8 +757,10 @@ var c1obj = new Vue({
     // 初始操作
     init: function () {
         var k = this;
+        // 监听store里的tab1的变化
         k.store.on('tab1', function(data) {
-            k.element.html(data);
+            //alert(data);
+            k.element.html(data.content);
         })
     },
     //事件中的回调方法
@@ -724,8 +780,9 @@ var c2obj = new Vue({
     },
     init: function () {
       var k = this;
+        // 监听store里的tab2的变化
       k.store.on('tab2', function(data) {
-          k.element.html(data);
+          k.element.html(data.content);
       })
     },
     methods: {
@@ -733,29 +790,8 @@ var c2obj = new Vue({
             alert(e.target.innerHTML);
         }
     }
-})
+});
 
-//数据流控制类
-var flow = Flow({
-    state: {
-        tab1: '',
-        tab2: ''
-    },
-    actions: {
-        changeTab1: function(data) {
-            var k = this;
-           setTimeout(function() {
-               k.commit('tab1', data)
-           }, 1000)
-        },
-        changeTab2: function(data) {
-            var k = this;
-            setTimeout(function() {
-                k.commit('tab2', data)
-            }, 1000)
-        }
-    }
-})
 
 
 //父组件
@@ -764,7 +800,7 @@ var pobj = new Vue({
 	element: $('.box1'),
     template: tp,
     //数据流控制
-    store: flow,
+    store: store,
     //注册子组件
     childComponents: {
     	'comp1':c1obj,
@@ -773,8 +809,12 @@ var pobj = new Vue({
     isDev: true,
     init: function() {
         var k = this;
+        k.tab = k.element.find('li');
         k.con = k.element.find('.c');
         k.list = k.con.find('.d');
+        k.tab.removeClass('cur').eq(0).addClass('cur');
+        k.list.removeClass('cur').eq(0).addClass('cur');
+        k.store.dispatch('changeTab1', {id: 'request 0'})
     },
     events: {
         'click li': 'show'
@@ -784,11 +824,12 @@ var pobj = new Vue({
             var k = this;
             var i = that.index();
             if(i === 0) {
-                k.store.dispatch('changeTab1', 'test tab11111111111111111 data')
+                k.store.dispatch('changeTab1', {id: 'request 1'})
             } else {
-                k.store.dispatch('changeTab2', 'test tab2 data')
+                k.store.dispatch('changeTab2',{id: 'request 2'})
             }
-            k.list.hide().eq(i).show();
+            k.tab.removeClass('cur').eq(i).addClass('cur');
+            k.list.removeClass('cur').eq(i).addClass('cur');
         }
     }
 })

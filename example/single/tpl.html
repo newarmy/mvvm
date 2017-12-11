@@ -1,0 +1,10 @@
+<ul id="tabH" style="overflow: hidden">
+    <%for(var i = 0, len = arr.length; i < len; i++) {%>
+    <li style="width: 100px; text-align:center; line-height:40px;float:left;"><%=arr[i].head%></li>
+    <%}%>
+</ul>
+<div id="tabC">
+    <%for(var i = 0, len = arr.length; i < len; i++) {%>
+    <div style="width:100%;height:200px;background:#ff0;color:#000;"><%=arr[i].content%></div>
+    <%}%>
+</div>
