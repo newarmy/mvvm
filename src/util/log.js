@@ -1,5 +1,6 @@
 
 /**
+ *
 * 日志类
 */
 console = window.console ? window.console : function(e){alert(e)};

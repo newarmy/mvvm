@@ -2,7 +2,7 @@
 
 var extend = require('./util/extend');
 var extendClass = require('./util/extendClass');
-var eventBase = require('./eventBase');
+var eventBase = require('./util/eventBase');
 var tplObj = require('./util/tplFunc');
 var Log = require('./util/log');
 var EVENT = require('./event-system/event-system')
@@ -32,6 +32,16 @@ var EVENT = require('./event-system/event-system')
 可以添加子组件
 */
 var isDev = false;
+function bind (fn, ctx) {
+    return function (a) {
+        var len = arguments.length
+        return len
+            ? len > 1
+                ? fn.apply(ctx, arguments)
+                : fn.call(ctx, a)
+            : fn.call(ctx)
+    }
+}
 function getRandomStr(str) {
     return str+'_'+String((new Date()).getTime()*Math.random()).substr(0,13);
 }
@@ -106,7 +116,7 @@ extend(baseVM.prototype, eventBase, {
         }
         if(k.methods) {
             for(var method in k.methods) {
-                k[method] = k.methods[method]
+                k[method] = bind(k.methods[method], k);
             }
         }
     },

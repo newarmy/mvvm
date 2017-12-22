@@ -6,7 +6,7 @@
  *
  **/
 var extend = require('./util/extend');
-var eventBase = require('./eventBase');
+var eventBase = require('./util/eventBase');
 function FlowManager (opt) {
 	this.state = opt.state;
 	this.actions = opt.actions;

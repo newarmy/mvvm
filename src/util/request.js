@@ -9,7 +9,7 @@ module.exports = function (opt) {
 		dataType : opt.dataType || 'json',
 		data: opt.data || {},
 		context: opt.context || true,
-        headers: opt.headers,
+        headers: opt.headers || {'X-Requested-With': 'XMLHttpRequest'},
         contentType: opt.contentType,
         mimeType: opt.mimeType,
         type: opt.method || "GET",

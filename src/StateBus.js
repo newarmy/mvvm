@@ -7,7 +7,7 @@
 */
 var extend = require('./util/extend');
 var extendClass = require('./util/extendClass');
-var eventBase = require('./eventBase');
+var eventBase = require('./util/eventBase');
 /**
 * 
 */
@@ -42,12 +42,14 @@ extend(stateBus.prototype, eventBase, {
 	_addListener: function(state) {
 		var k = this;
 		k.on(state+"_change", function(opt) {
-			var targetClassId = opt.classId ? opt.classId : k.classId;
+			var targetClassId = (opt && opt.classId) ? opt.classId : k.classId;
 			var newOpt = {
 				type: state,
-				payload: opt.payload,
 				classId: targetClassId//标示哪个state对象触发的事件
 			};
+			if(opt && opt.payload) {
+                newOpt.payload = opt.payload;
+			}
 			k.trigger(newOpt.type, newOpt);
 
 			if(k.parentBus && k.parentBus.states[newOpt.type]) {

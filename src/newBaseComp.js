@@ -2,7 +2,7 @@
 
 var extend = require('./util/extend');
 var extendClass = require('./util/extendClass');
-var eventBase = require('./eventBase');
+var eventBase = require('./util/eventBase');
 var tplObj = require('./util/tplFunc');
 var Log = require('./util/log');
 /**
@@ -33,6 +33,16 @@ var Log = require('./util/log');
 var isDev = false;
 function getRandomStr(str) {
     return str+'_'+String((new Date()).getTime()*Math.random()).substr(0,13);
+}
+function bind (fn, ctx) {
+    return function (a) {
+        var len = arguments.length
+        return len
+            ? len > 1
+                ? fn.apply(ctx, arguments)
+                : fn.call(ctx, a)
+            : fn.call(ctx)
+    }
 }
 var _childReg = /\{\{([^\{\}]*)\}\}/g; //匹配子组件在父组件模板的占位符。
 var _childRootDomReg =/^<([a-z/][-a-z0-9_:.]*)[^>/]*>/; //子组件模板字符串首个tag的开始标签
@@ -102,7 +112,7 @@ extend(baseVM.prototype, eventBase, {
         }
         if(k.methods) {
             for(var method in k.methods) {
-                k[method] = k.methods[method]
+                k[method] = bind(k.methods[method], k);
             }
         }
     },
