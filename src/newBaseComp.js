@@ -188,11 +188,20 @@ extend(baseVM.prototype, eventBase, {
     methods: {
 
 	},
+    /**
+    *
+    * */
+    setData: function (data) {
+      var k = this;
+      k.data = data;
+      k._generateHTML();
+      k.element.html(k._cackeHtml);
+    },
     _generateHTML: function() {
         var k = this;
         if(k.data){
             k._cackeHtml = k.tpl(k.data);
-        }else {
+        } else {
             k._cackeHtml = k.tpl({});
         }
 

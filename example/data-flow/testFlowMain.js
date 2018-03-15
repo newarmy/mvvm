@@ -9,6 +9,10 @@ var store = require('./store');
 var c1obj = new Vue({
     template: t1, //模板文件
     isDev: true, //输出流程标识
+    data: {
+        dd: 'test tpl',
+        cc: 'this is a test'
+    },
     // 事件
     events: {
         'click p': 'show'

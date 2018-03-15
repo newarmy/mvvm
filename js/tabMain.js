@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 28);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -101,50 +101,6 @@ module.exports = function (obj) {
 /***/ }),
 
 /***/ 1:
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-
-/***/ 14:
-/***/ (function(module, exports) {
-
-module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
-
-/***/ }),
-
-/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -179,56 +135,21 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 28:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 15:
+/***/ (function(module, exports) {
 
-var baseComp = __webpack_require__(3);
-var tpl = __webpack_require__(14);
-var dom = $('.box');
-var tabComp = new baseComp({
-    element: dom,
-    isDev: true,
-    //做一些组件初始化操作
-    init: function () {
-        var k = this;
-        k.heads = k.element.find('li');
-        k.cons = k.element.find('#tabC').find('div');
-        k.heads.removeClass('cur').eq(0).addClass('cur');
-        k.cons.removeClass('cur').eq(0).addClass('cur');
-    },
-    // 注册事件
-    events: {
-        'click li': 'showCurrentDiv'
-    },
-    // 事件对应的行为函数
-    methods: {
-        // 事件对应的行为函数
-        showCurrentDiv: function (e, it) {
-            var k = this;
-            e.preventDefault();
-            var index = it.index();
-            k.heads.removeClass('cur').eq(index).addClass('cur');
-            k.cons.removeClass('cur').eq(index).addClass('cur');
-        }
-    },
-    template: tpl,
-    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
-})
-
-//添加到dom中
-tabComp.mounted()
-
+module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
 
 /***/ }),
 
-/***/ 3:
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
+var extendClass = __webpack_require__(1);
+var eventBase = __webpack_require__(3);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 /**
@@ -259,6 +180,16 @@ var Log = __webpack_require__(5);
 var isDev = false;
 function getRandomStr(str) {
     return str+'_'+String((new Date()).getTime()*Math.random()).substr(0,13);
+}
+function bind (fn, ctx) {
+    return function (a) {
+        var len = arguments.length
+        return len
+            ? len > 1
+                ? fn.apply(ctx, arguments)
+                : fn.call(ctx, a)
+            : fn.call(ctx)
+    }
 }
 var _childReg = /\{\{([^\{\}]*)\}\}/g; //匹配子组件在父组件模板的占位符。
 var _childRootDomReg =/^<([a-z/][-a-z0-9_:.]*)[^>/]*>/; //子组件模板字符串首个tag的开始标签
@@ -328,7 +259,7 @@ extend(baseVM.prototype, eventBase, {
         }
         if(k.methods) {
             for(var method in k.methods) {
-                k[method] = k.methods[method]
+                k[method] = bind(k.methods[method], k);
             }
         }
     },
@@ -404,11 +335,20 @@ extend(baseVM.prototype, eventBase, {
     methods: {
 
 	},
+    /**
+    *
+    * */
+    setData: function (data) {
+      var k = this;
+      k.data = data;
+      k._generateHTML();
+      k.element.html(k._cackeHtml);
+    },
     _generateHTML: function() {
         var k = this;
         if(k.data){
             k._cackeHtml = k.tpl(k.data);
-        }else {
+        } else {
             k._cackeHtml = k.tpl({});
         }
 
@@ -597,6 +537,85 @@ module.exports =  function(opt){
 
 /***/ }),
 
+/***/ 29:
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseComp = __webpack_require__(2);
+var tpl = __webpack_require__(15);
+var dom = $('.box');
+var tabComp = new baseComp({
+    element: dom,
+    isDev: true,
+    //做一些组件初始化操作
+    init: function () {
+        var k = this;
+        k.heads = k.element.find('li');
+        k.cons = k.element.find('#tabC').find('div');
+        k.heads.removeClass('cur').eq(0).addClass('cur');
+        k.cons.removeClass('cur').eq(0).addClass('cur');
+    },
+    // 注册事件
+    events: {
+        'click li': 'showCurrentDiv'
+    },
+    // 事件对应的行为函数
+    methods: {
+        // 事件对应的行为函数
+        showCurrentDiv: function (e, it) {
+            var k = this;
+            e.preventDefault();
+            var index = it.index();
+            k.heads.removeClass('cur').eq(index).addClass('cur');
+            k.cons.removeClass('cur').eq(index).addClass('cur');
+        }
+    },
+    template: tpl,
+    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
+})
+
+//添加到dom中
+tabComp.mounted()
+
+
+/***/ }),
+
+/***/ 3:
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+
 /***/ 4:
 /***/ (function(module, exports) {
 
@@ -614,17 +633,23 @@ var template = {
 		var endArr;//结束标识符分割的数组
 		var variable;
 		var varArr;//
-		var html = 'var data = arguments[0];  var str=""; with(data){';
-		var temp;
-		for(var i = 0, l = startArr.length; i < l; i++) {
+        var temp;
+        var html;
+        var l = startArr.length;
+        if(startArr.length === 1) {
+        	html = 'var str= \''+str+'\'; return str;';
+        	return new Function('data', html);
+		}
+		html = ' var str=""; with(data) {';
+		for(var i = 0 ; i < l; i++) {
 			temp = startArr[i];
-			 endArr = temp.split(this.endTag);
-			if(endArr.length == 1) {//纯字符串
+			endArr = temp.split(this.endTag);
+			if(endArr.length === 1) {//纯字符串
 				html+='str+=\''+endArr[0]+'\';';
 			} else {//有变量或语句
 				variable = endArr[0];
 				varArr = variable.match(reg);
-				if(varArr && varArr.length==2) {//是变量
+				if(varArr && varArr.length === 2) {//是变量
 					
 					html +='str+='+ varArr[1]+';'; 
 					html += 'str+=\''+endArr[1]+'\';';
@@ -636,7 +661,7 @@ var template = {
 		}
 		html+='} return str;';
 		//console.log(html);
-		return new Function( html);
+		return new Function('data', html);
 	}
 };
 module.exports = template;
@@ -648,6 +673,7 @@ module.exports = template;
 
 
 /**
+ *
 * 日志类
 */
 console = window.console ? window.console : function(e){alert(e)};

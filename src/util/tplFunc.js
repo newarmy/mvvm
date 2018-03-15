@@ -12,17 +12,23 @@ var template = {
 		var endArr;//结束标识符分割的数组
 		var variable;
 		var varArr;//
-		var html = 'var data = arguments[0];  var str=""; with(data){';
-		var temp;
-		for(var i = 0, l = startArr.length; i < l; i++) {
+        var temp;
+        var html;
+        var l = startArr.length;
+        if(startArr.length === 1) {
+        	html = 'var str= \''+str+'\'; return str;';
+        	return new Function('data', html);
+		}
+		html = ' var str=""; with(data) {';
+		for(var i = 0 ; i < l; i++) {
 			temp = startArr[i];
-			 endArr = temp.split(this.endTag);
-			if(endArr.length == 1) {//纯字符串
+			endArr = temp.split(this.endTag);
+			if(endArr.length === 1) {//纯字符串
 				html+='str+=\''+endArr[0]+'\';';
 			} else {//有变量或语句
 				variable = endArr[0];
 				varArr = variable.match(reg);
-				if(varArr && varArr.length==2) {//是变量
+				if(varArr && varArr.length === 2) {//是变量
 					
 					html +='str+='+ varArr[1]+';'; 
 					html += 'str+=\''+endArr[1]+'\';';
@@ -34,7 +40,7 @@ var template = {
 		}
 		html+='} return str;';
 		//console.log(html);
-		return new Function( html);
+		return new Function('data', html);
 	}
 };
 module.exports = template;

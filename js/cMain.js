@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 28);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -99,42 +99,6 @@ module.exports = function (obj) {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -168,14 +132,14 @@ module.exports = function (protoProps, staticProps) {
 };
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
+var extendClass = __webpack_require__(1);
+var eventBase = __webpack_require__(3);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 /**
@@ -206,6 +170,16 @@ var Log = __webpack_require__(5);
 var isDev = false;
 function getRandomStr(str) {
     return str+'_'+String((new Date()).getTime()*Math.random()).substr(0,13);
+}
+function bind (fn, ctx) {
+    return function (a) {
+        var len = arguments.length
+        return len
+            ? len > 1
+                ? fn.apply(ctx, arguments)
+                : fn.call(ctx, a)
+            : fn.call(ctx)
+    }
 }
 var _childReg = /\{\{([^\{\}]*)\}\}/g; //匹配子组件在父组件模板的占位符。
 var _childRootDomReg =/^<([a-z/][-a-z0-9_:.]*)[^>/]*>/; //子组件模板字符串首个tag的开始标签
@@ -275,7 +249,7 @@ extend(baseVM.prototype, eventBase, {
         }
         if(k.methods) {
             for(var method in k.methods) {
-                k[method] = k.methods[method]
+                k[method] = bind(k.methods[method], k);
             }
         }
     },
@@ -351,11 +325,20 @@ extend(baseVM.prototype, eventBase, {
     methods: {
 
 	},
+    /**
+    *
+    * */
+    setData: function (data) {
+      var k = this;
+      k.data = data;
+      k._generateHTML();
+      k.element.html(k._cackeHtml);
+    },
     _generateHTML: function() {
         var k = this;
         if(k.data){
             k._cackeHtml = k.tpl(k.data);
-        }else {
+        } else {
             k._cackeHtml = k.tpl({});
         }
 
@@ -543,6 +526,42 @@ module.exports =  function(opt){
 }
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
@@ -560,17 +579,23 @@ var template = {
 		var endArr;//结束标识符分割的数组
 		var variable;
 		var varArr;//
-		var html = 'var data = arguments[0];  var str=""; with(data){';
-		var temp;
-		for(var i = 0, l = startArr.length; i < l; i++) {
+        var temp;
+        var html;
+        var l = startArr.length;
+        if(startArr.length === 1) {
+        	html = 'var str= \''+str+'\'; return str;';
+        	return new Function('data', html);
+		}
+		html = ' var str=""; with(data) {';
+		for(var i = 0 ; i < l; i++) {
 			temp = startArr[i];
-			 endArr = temp.split(this.endTag);
-			if(endArr.length == 1) {//纯字符串
+			endArr = temp.split(this.endTag);
+			if(endArr.length === 1) {//纯字符串
 				html+='str+=\''+endArr[0]+'\';';
 			} else {//有变量或语句
 				variable = endArr[0];
 				varArr = variable.match(reg);
-				if(varArr && varArr.length==2) {//是变量
+				if(varArr && varArr.length === 2) {//是变量
 					
 					html +='str+='+ varArr[1]+';'; 
 					html += 'str+=\''+endArr[1]+'\';';
@@ -582,7 +607,7 @@ var template = {
 		}
 		html+='} return str;';
 		//console.log(html);
-		return new Function( html);
+		return new Function('data', html);
 	}
 };
 module.exports = template;
@@ -593,6 +618,7 @@ module.exports = template;
 
 
 /**
+ *
 * 日志类
 */
 console = window.console ? window.console : function(e){alert(e)};
@@ -605,16 +631,17 @@ module.exports = {
 /***/ }),
 /* 6 */,
 /* 7 */,
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(3);
-var t1 = __webpack_require__(21);
-var tg = __webpack_require__(23);
+var Vue = __webpack_require__(2);
+var t1 = __webpack_require__(22);
+var tg = __webpack_require__(24);
 
 var gobj = new Vue({
     template: tg,
@@ -648,15 +675,15 @@ var c1obj = new Vue({
 module.exports = c1obj
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(3);
-var t2 = __webpack_require__(22);
+var Vue = __webpack_require__(2);
+var t2 = __webpack_require__(23);
 
 var c2obj = new Vue({
     template: t2,
@@ -674,54 +701,54 @@ var c2obj = new Vue({
 module.exports = c2obj
 
 /***/ }),
-/* 10 */,
 /* 11 */,
 /* 12 */,
-/* 13 */
+/* 13 */,
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
-/* 14 */,
 /* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */
+/* 21 */,
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第一子组件\r\n    {{grandSon}}\r\n    <p>测试</p>\r\n</div>"
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    第一孙子组件\r\n</div>"
 
 /***/ }),
-/* 24 */,
 /* 25 */,
 /* 26 */,
-/* 27 */
+/* 27 */,
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(3);
-var child1 = __webpack_require__(8);
-var child2 = __webpack_require__(9);
-var tp = __webpack_require__(13);
+var Vue = __webpack_require__(2);
+var child1 = __webpack_require__(9);
+var child2 = __webpack_require__(10);
+var tp = __webpack_require__(14);
 
 var pobj = new Vue({
 	element: $('.box1'),
