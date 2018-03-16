@@ -59,7 +59,7 @@ function baseVM(opt) {
 	this.stateBus = opt.stateBus || null;
 	this.tpl = opt.tpl || null;//视图模板
 	this.data = opt.data || null;//跟视图相关的数据
-    this._parentComp = null;//父组件
+    this._parentComp = null;//父组件 （子组件可以通过属性_parentComp访问父组件的参数）
 	this._eventArr = [];//内部使用
     this._cackeHtml = "";// 缓存拼接的html字符串
     this._cId = getRandomStr('comp');//实例的唯一识别
@@ -187,7 +187,7 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-     * 最好通过setData来更新组件的data数据
+     * 最好通过setData来更新组件的data数据，从而更新组件dom
      * (适用于没有子组件的组件)
     * */
     setData: function (data) {
@@ -253,15 +253,19 @@ extend(baseVM.prototype, eventBase, {
     destroy: function() {
         var k = this;
         k.removeEvents();
-        k.element = null;
+        //k.element = null;
         for(var key in k.childComponents) {
             k.childComponents[key].removeEvents();
             k.childComponents[key].element = null;
-            k.childComponents[key] = null;
+            //k.childComponents[key] = null;
         }
+        k.element.html('');
     },
 	removeEvents: function() {
 		var k = this, arr;
+		if(!k.eventArr) {
+		    return;
+        }
 		for(var i = 0, len = k.eventArr.length; i < len; i++) {
 			arr = k.eventArr[i];
 			k.element.off(arr[0]);

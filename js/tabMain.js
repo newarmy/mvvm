@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 28);
+/******/ 	return __webpack_require__(__webpack_require__.s = 32);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -101,136 +101,15 @@ module.exports = function (obj) {
 /***/ }),
 
 /***/ 1:
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-
-/***/ 14:
-/***/ (function(module, exports) {
-
-module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
-
-/***/ }),
-
-/***/ 2:
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/**
-* 继承工具方法
-*/
-var extend = __webpack_require__(0);
-module.exports = function (protoProps, staticProps) {
-	var parent = this;
-	var child;
-	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
-		child = protoProps.prototype.constructor;
-	} else {
-		child = function () {
-			return parent.apply(this, arguments);
-		};
-	}
-	//拷贝静态属性
-	extend(child, parent, staticProps);
-	//子类与父类之间的代理，使子类不能修改父类方法
-	var proxy = function() {
-		this.constructor = child;
-	};
-	proxy.prototype = parent.prototype;
-	child.prototype = new proxy();
-	
-	//拷贝原型属性
-	if (protoProps) extend(child.prototype, protoProps);
-	
-	return child;
-};
-
-/***/ }),
-
-/***/ 28:
-/***/ (function(module, exports, __webpack_require__) {
-
-var baseComp = __webpack_require__(3);
-var tpl = __webpack_require__(14);
-var dom = $('.box');
-var tabComp = new baseComp({
-    element: dom,
-    isDev: true,
-    //做一些组件初始化操作
-    init: function () {
-        var k = this;
-        k.heads = k.element.find('li');
-        k.cons = k.element.find('#tabC').find('div');
-        k.heads.removeClass('cur').eq(0).addClass('cur');
-        k.cons.removeClass('cur').eq(0).addClass('cur');
-    },
-    // 注册事件
-    events: {
-        'click li': 'showCurrentDiv'
-    },
-    // 事件对应的行为函数
-    methods: {
-        // 事件对应的行为函数
-        showCurrentDiv: function (e, it) {
-            var k = this;
-            e.preventDefault();
-            var index = it.index();
-            k.heads.removeClass('cur').eq(index).addClass('cur');
-            k.cons.removeClass('cur').eq(index).addClass('cur');
-        }
-    },
-    template: tpl,
-    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
-})
-
-//添加到dom中
-tabComp.mounted()
-
-
-/***/ }),
-
-/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(4);
-var Log = __webpack_require__(5);
+var extendClass = __webpack_require__(3);
+var eventBase = __webpack_require__(2);
+var tplObj = __webpack_require__(5);
+var Log = __webpack_require__(4);
 /**
  组件强依赖zepto.js 或 jquery.js
 
@@ -285,7 +164,7 @@ function baseVM(opt) {
 	this.stateBus = opt.stateBus || null;
 	this.tpl = opt.tpl || null;//视图模板
 	this.data = opt.data || null;//跟视图相关的数据
-    this._parentComp = null;//父组件
+    this._parentComp = null;//父组件 （子组件可以通过属性_parentComp访问父组件的参数）
 	this._eventArr = [];//内部使用
     this._cackeHtml = "";// 缓存拼接的html字符串
     this._cId = getRandomStr('comp');//实例的唯一识别
@@ -413,7 +292,7 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-     * 最好通过setData来更新组件的data数据
+     * 最好通过setData来更新组件的data数据，从而更新组件dom
      * (适用于没有子组件的组件)
     * */
     setData: function (data) {
@@ -479,15 +358,19 @@ extend(baseVM.prototype, eventBase, {
     destroy: function() {
         var k = this;
         k.removeEvents();
-        k.element = null;
+        //k.element = null;
         for(var key in k.childComponents) {
             k.childComponents[key].removeEvents();
             k.childComponents[key].element = null;
-            k.childComponents[key] = null;
+            //k.childComponents[key] = null;
         }
+        k.element.html('');
     },
 	removeEvents: function() {
 		var k = this, arr;
+		if(!k.eventArr) {
+		    return;
+        }
 		for(var i = 0, len = k.eventArr.length; i < len; i++) {
 			arr = k.eventArr[i];
 			k.element.off(arr[0]);
@@ -619,7 +502,145 @@ module.exports =  function(opt){
 
 /***/ }),
 
+/***/ 16:
+/***/ (function(module, exports) {
+
+module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
+
+/***/ }),
+
+/***/ 2:
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+
+/***/ 3:
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+* 继承工具方法
+*/
+var extend = __webpack_require__(0);
+module.exports = function (protoProps, staticProps) {
+	var parent = this;
+	var child;
+	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
+		child = protoProps.prototype.constructor;
+	} else {
+		child = function () {
+			return parent.apply(this, arguments);
+		};
+	}
+	//拷贝静态属性
+	extend(child, parent, staticProps);
+	//子类与父类之间的代理，使子类不能修改父类方法
+	var proxy = function() {
+		this.constructor = child;
+	};
+	proxy.prototype = parent.prototype;
+	child.prototype = new proxy();
+	
+	//拷贝原型属性
+	if (protoProps) extend(child.prototype, protoProps);
+	
+	return child;
+};
+
+/***/ }),
+
+/***/ 32:
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseComp = __webpack_require__(1);
+var tpl = __webpack_require__(16);
+var dom = $('.box');
+var tabComp = new baseComp({
+    element: dom,
+    isDev: true,
+    //做一些组件初始化操作
+    init: function () {
+        var k = this;
+        k.heads = k.element.find('li');
+        k.cons = k.element.find('#tabC').find('div');
+        k.heads.removeClass('cur').eq(0).addClass('cur');
+        k.cons.removeClass('cur').eq(0).addClass('cur');
+    },
+    // 注册事件
+    events: {
+        'click li': 'showCurrentDiv'
+    },
+    // 事件对应的行为函数
+    methods: {
+        // 事件对应的行为函数
+        showCurrentDiv: function (e, it) {
+            var k = this;
+            e.preventDefault();
+            var index = it.index();
+            k.heads.removeClass('cur').eq(index).addClass('cur');
+            k.cons.removeClass('cur').eq(index).addClass('cur');
+        }
+    },
+    template: tpl,
+    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
+})
+
+//添加到dom中
+tabComp.mounted()
+
+
+/***/ }),
+
 /***/ 4:
+/***/ (function(module, exports) {
+
+
+/**
+ *
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
+
+/***/ }),
+
+/***/ 5:
 /***/ (function(module, exports) {
 
 
@@ -668,23 +689,6 @@ var template = {
 	}
 };
 module.exports = template;
-
-/***/ }),
-
-/***/ 5:
-/***/ (function(module, exports) {
-
-
-/**
- *
-* 日志类
-*/
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
-	log: console.log,
-	error: console.error
-};
 
 /***/ })
 

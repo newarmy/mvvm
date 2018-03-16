@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 31);
+/******/ 	return __webpack_require__(__webpack_require__.s = 38);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -100,44 +100,7 @@ module.exports = function (obj) {
 
 /***/ }),
 
-/***/ 1:
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-
-/***/ 15:
+/***/ 17:
 /***/ (function(module, exports, __webpack_require__) {
 
 //数据加载处理模块
@@ -145,9 +108,9 @@ module.exports = {
 	opt.url： 数据的地址 
 */
 var extend = __webpack_require__(0);
-var request = __webpack_require__(25);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
+var request = __webpack_require__(31);
+var extendClass = __webpack_require__(3);
+var eventBase = __webpack_require__(2);
 function ModelBase () {
 	//接收数据的属性
 	this.data = {};
@@ -268,7 +231,7 @@ module.exports = ModelBase;
 
 /***/ }),
 
-/***/ 16:
+/***/ 19:
 /***/ (function(module, exports, __webpack_require__) {
 
 //集中管理状态的基类
@@ -279,8 +242,8 @@ module.exports = ModelBase;
 			3. 公用这个状态的组件根据接收到的数据，触发相应的行为
 */
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
+var extendClass = __webpack_require__(3);
+var eventBase = __webpack_require__(2);
 /**
 * 
 */
@@ -357,171 +320,44 @@ module.exports = stateBus;
 
 /***/ }),
 
-/***/ 17:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 2:
+/***/ (function(module, exports) {
 
-//vm基类,
-
-var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(4);
-/**
-	opt说明：
-    element: 容器Dom元素（jquery对象或zepto对象）
-	tpl: 模板
-	model: 数据模型 (ModelBase 或其子类)
-	selfParam:自定义属性，对象实例自己的属性
-    stateBus: 用于组件间通信的(StateBus对象)
-*/
-function VM(opt) {
-	this.element = opt.element;
-	this.model = opt.model;
-	this.tpl = opt.tpl;//string or object
-	this.selfParam = opt.selfParam || {};
-	this.stateBus = opt.stateBus || null;
-	this._eventArr = [];//内部使用
-	this._isEventParsed = false;//是否解析完dom事件
-	this.prepareFunc();
-}
-
-extend(VM.prototype, eventBase, {
-	prepareFunc: function() {
-		var k = this;
-		if(!k.element) {
-			k.element =$('<div></div>');
-		}
-		if(k.tpl) {
-			k.init();
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
 		} else {
-			k.noModelInit();
-		}
-	}, //初始操作，子类可以重写, 调用noModelInit方法或调用init方法
-	events: null,//{'click .tab': 'get'} 用来给dom元素注册事件(事件代理)
-    noModelInit: function() {//没有用到MODEL组件的时候，要需要调用noModelInit来解析自定义事件，
-    	this.parseEvent();
-    },
-	init: function() {//用到MODEL组件的时候，要需要调用init来初始化数据事件和自定义dom事件，
-		var k = this;
-		k.handlerTemplate();
-		k.model.on('getData', k.render, k);
-		k.model.on('error', k.error, k);
-		if(!k._isEventParsed) {
-			k._isEventParsed = true;
-			k.parseEvent();
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
 		}
 	},
-	handlerTemplate: function() {
-		var k = this;
-		if(Object.prototype.toString.call(k.tpl) === '[object String]') {
-			k.tpl = tplObj.parse(k.filterSpecialLetter(k.tpl));
-		} else {
-			for(var key in k.tpl) {
-				k.tpl[key] = tplObj.parse(k.filterSpecialLetter(k.tpl[key]));
-			}
-		}
-	},
-	filterSpecialLetter: function(tpl) {
-		/*
-		 控制字符的使用
-		字符编码值	名称	正式名称	用途
-		\u200C	零宽非连接符	<ZWNJ>	IdentifierPart
-		\u200D	零宽连接符	<ZWJ>	IdentifierPart
-		\uFEFF	位序掩码	<BOM>	Whitespace
-
-
-		   空白字符
-			\u0009	制表符	<TAB>
-		    \u000B	纵向制表符	<VT>
-		   \u000C	进纸符	<FF>
-		   \u0020	空格	<SP>
-		    \u00A0	非断空格	<NBSP>
-		   \uFEFF	位序掩码	<BOM>
-
-
-		   行终止字符
-		字符编码值	名称	正式名称
-		\u000A	进行符	<LF>
-		\u000D	回车符	<CR>
-		\u2028	行分隔符	<LS>
-		\u2029	段分隔符	<PS>
-
-		*/
-		 tpl = tpl.replace(/(\n+)|(\r+)|(\n*\r*)|(\u000A|\u000D|\u2028|\u2029)*/g,"");
-		 return tpl;
-	},
-	//用到MODEL组件的时候，调用这个方法来获取数据，
-	//opt的值跟$.ajax(opt)的参数一致
-	toGetData: function(opt) {
-		var k = this;
-		k.model.request(opt);
-	},
-	//render方法可以重写， 需要更新dom的vm对象重写render方法
-	render: function(data) {
-		var k = this;
-		var html = k.tpl(data);
-		if(k.el) {
-			k.el.html(html);
-		} else {
-			k.element.html(html);
-		}
-	},
-	error: function() {
-		
-	},
-	parseEvent: function() {
-		var k = this;
-		var reg = /\s+/;
-		var kongReg = /(^\s*)|(\s*$)/g;
-		var eArr = [];
-		var l;
-		if (!k.events) {
+	off: function(type, callback) {
+		if(!this.events[type]) {
 			return;
 		}
-		for(var key in k.events) {
-			key = key.replace(kongReg, '');
-			eArr = key.split(reg);
-			eArr.push(k.events[key]);
-			k._eventArr.push(eArr);
-		}
-		for(var i = 0, len = k._eventArr.length; i < len; i++) {
-			eArr = k._eventArr[i];
-			l = eArr.length;
-			if(l == 2) {
-				(function(eArr){
-					k.element.on(eArr[0], function(e) {
-						k[eArr[1]].call(k, e);
-					});
-				}(eArr));
-				
-			} else {
-				(function(eArr){
-					k.element.on(eArr[0], eArr[1], function(e) {
-						var $t = $(this);
-						k[eArr[2]].call(k, e, $t);
-					});
-				}(eArr));
-				
-			}
-		}
+		this.events[type] = [];
 	},
-	removeEvents: function() {
-		var k = this, arr;
-		for(var i = 0, len = k._eventArr.length; i < len; i++) {
-			arr = k._eventArr[i];
-			k.element.off(arr[0]);
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
 		}
-        k._eventArr = [];
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
 	}
-});
-
-VM.extend = extendClass;
-
-module.exports = VM;
+};
 
 /***/ }),
 
-/***/ 2:
+/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -556,7 +392,7 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 25:
+/***/ 31:
 /***/ (function(module, exports) {
 
 
@@ -594,16 +430,16 @@ module.exports = function (opt) {
 
 /***/ }),
 
-/***/ 31:
+/***/ 38:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var ModelBase = __webpack_require__(15);
-var VM = __webpack_require__(17);
-var StateBus = __webpack_require__(16);
+var ModelBase = __webpack_require__(17);
+var VM = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../src/VM\""); e.code = 'MODULE_NOT_FOUND';; throw e; }()));
+var StateBus = __webpack_require__(19);
 
 var stateObj = {
 	subId: 'subId'
@@ -646,58 +482,6 @@ cv.toGetData({
 	url: '/data/main.json',
 	dataType: 'json'
 });
-
-/***/ }),
-
-/***/ 4:
-/***/ (function(module, exports) {
-
-
-/**
-* template
-*/
-
-var template = {
-	startTag: "<%",
-	endTag: "%>",
-	parse: function (str) {
-		var reg = /^=(.+)/;//来判断是变量还是语句
-		var startArr = str.split(this.startTag);//开始标识符分割的数组
-		var endArr;//结束标识符分割的数组
-		var variable;
-		var varArr;//
-        var temp;
-        var html;
-        var l = startArr.length;
-        if(startArr.length === 1) {
-        	html = 'var str= \''+str+'\'; return str;';
-        	return new Function('data', html);
-		}
-		html = ' var str=""; with(data) {';
-		for(var i = 0 ; i < l; i++) {
-			temp = startArr[i];
-			endArr = temp.split(this.endTag);
-			if(endArr.length === 1) {//纯字符串
-				html+='str+=\''+endArr[0]+'\';';
-			} else {//有变量或语句
-				variable = endArr[0];
-				varArr = variable.match(reg);
-				if(varArr && varArr.length === 2) {//是变量
-					
-					html +='str+='+ varArr[1]+';'; 
-					html += 'str+=\''+endArr[1]+'\';';
-				} else {
-					html += endArr[0];//是语句
-					html += 'str+=\''+endArr[1]+'\';';
-				}
-			}
-		}
-		html+='} return str;';
-		//console.log(html);
-		return new Function('data', html);
-	}
-};
-module.exports = template;
 
 /***/ })
 

@@ -6,9 +6,9 @@ var path = require('path');
 //var UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 module.exports ={
 	entry: {
-		main: './test/main.js',
 		tabMain: './example/single/singleComp.js',
         cMain: './example/muiti/combinationMain.js',
+        rMain: './example/route/routeMain.js',
 		fMain: './example/data-flow/testFlowMain.js',
         event: './test/event/eventTest.js',
         bind: './test/bind/bindTest.js',

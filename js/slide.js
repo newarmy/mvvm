@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 35);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -100,53 +100,16 @@ module.exports = function (obj) {
 
 /***/ }),
 
-/***/ 1:
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-
 /***/ 18:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(4);
-var Log = __webpack_require__(5);
+var extendClass = __webpack_require__(3);
+var eventBase = __webpack_require__(2);
+var tplObj = __webpack_require__(5);
+var Log = __webpack_require__(4);
 var EVENT = __webpack_require__(6)
 /**
  不依赖zepto.js 或 jquery.js时，使用此基类
@@ -555,6 +518,43 @@ module.exports =  function(opt){
 /***/ }),
 
 /***/ 2:
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+
+/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -589,7 +589,7 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 32:
+/***/ 35:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -1007,6 +1007,23 @@ var Slide = new BaseComp({
 
 
 /**
+ *
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
+
+/***/ }),
+
+/***/ 5:
+/***/ (function(module, exports) {
+
+
+/**
 * template
 */
 
@@ -1051,23 +1068,6 @@ var template = {
 	}
 };
 module.exports = template;
-
-/***/ }),
-
-/***/ 5:
-/***/ (function(module, exports) {
-
-
-/**
- *
-* 日志类
-*/
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
-	log: console.log,
-	error: console.error
-};
 
 /***/ }),
 

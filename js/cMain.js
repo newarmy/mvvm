@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 30);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -99,85 +99,15 @@ module.exports = function (obj) {
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/**
-* 继承工具方法
-*/
-var extend = __webpack_require__(0);
-module.exports = function (protoProps, staticProps) {
-	var parent = this;
-	var child;
-	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
-		child = protoProps.prototype.constructor;
-	} else {
-		child = function () {
-			return parent.apply(this, arguments);
-		};
-	}
-	//拷贝静态属性
-	extend(child, parent, staticProps);
-	//子类与父类之间的代理，使子类不能修改父类方法
-	var proxy = function() {
-		this.constructor = child;
-	};
-	proxy.prototype = parent.prototype;
-	child.prototype = new proxy();
-	
-	//拷贝原型属性
-	if (protoProps) extend(child.prototype, protoProps);
-	
-	return child;
-};
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(2);
-var eventBase = __webpack_require__(1);
-var tplObj = __webpack_require__(4);
-var Log = __webpack_require__(5);
+var extendClass = __webpack_require__(3);
+var eventBase = __webpack_require__(2);
+var tplObj = __webpack_require__(5);
+var Log = __webpack_require__(4);
 /**
  组件强依赖zepto.js 或 jquery.js
 
@@ -232,7 +162,7 @@ function baseVM(opt) {
 	this.stateBus = opt.stateBus || null;
 	this.tpl = opt.tpl || null;//视图模板
 	this.data = opt.data || null;//跟视图相关的数据
-    this._parentComp = null;//父组件
+    this._parentComp = null;//父组件 （子组件可以通过属性_parentComp访问父组件的参数）
 	this._eventArr = [];//内部使用
     this._cackeHtml = "";// 缓存拼接的html字符串
     this._cId = getRandomStr('comp');//实例的唯一识别
@@ -360,7 +290,7 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-     * 最好通过setData来更新组件的data数据
+     * 最好通过setData来更新组件的data数据，从而更新组件dom
      * (适用于没有子组件的组件)
     * */
     setData: function (data) {
@@ -426,15 +356,19 @@ extend(baseVM.prototype, eventBase, {
     destroy: function() {
         var k = this;
         k.removeEvents();
-        k.element = null;
+        //k.element = null;
         for(var key in k.childComponents) {
             k.childComponents[key].removeEvents();
             k.childComponents[key].element = null;
-            k.childComponents[key] = null;
+            //k.childComponents[key] = null;
         }
+        k.element.html('');
     },
 	removeEvents: function() {
 		var k = this, arr;
+		if(!k.eventArr) {
+		    return;
+        }
 		for(var i = 0, len = k.eventArr.length; i < len; i++) {
 			arr = k.eventArr[i];
 			k.element.off(arr[0]);
@@ -565,7 +499,93 @@ module.exports =  function(opt){
 }
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+* 继承工具方法
+*/
+var extend = __webpack_require__(0);
+module.exports = function (protoProps, staticProps) {
+	var parent = this;
+	var child;
+	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
+		child = protoProps.prototype.constructor;
+	} else {
+		child = function () {
+			return parent.apply(this, arguments);
+		};
+	}
+	//拷贝静态属性
+	extend(child, parent, staticProps);
+	//子类与父类之间的代理，使子类不能修改父类方法
+	var proxy = function() {
+		this.constructor = child;
+	};
+	proxy.prototype = parent.prototype;
+	child.prototype = new proxy();
+	
+	//拷贝原型属性
+	if (protoProps) extend(child.prototype, protoProps);
+	
+	return child;
+};
+
+/***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+
+/**
+ *
+* 日志类
+*/
+console = window.console ? window.console : function(e){alert(e)};
+
+module.exports = {
+	log: console.log,
+	error: console.error
+};
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports) {
 
 
@@ -616,22 +636,6 @@ var template = {
 module.exports = template;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-
-/**
- *
-* 日志类
-*/
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
-	log: console.log,
-	error: console.error
-};
-
-/***/ }),
 /* 6 */,
 /* 7 */,
 /* 8 */
@@ -641,7 +645,7 @@ module.exports = {
 /**
 
 */
-var Vue = __webpack_require__(3);
+var Vue = __webpack_require__(1);
 var t1 = __webpack_require__(21);
 var tg = __webpack_require__(23);
 
@@ -684,7 +688,7 @@ module.exports = c1obj
 /**
 
 */
-var Vue = __webpack_require__(3);
+var Vue = __webpack_require__(1);
 var t2 = __webpack_require__(22);
 
 var c2obj = new Vue({
@@ -706,14 +710,14 @@ module.exports = c2obj
 /* 10 */,
 /* 11 */,
 /* 12 */,
-/* 13 */
+/* 13 */,
+/* 14 */,
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
-/* 14 */,
-/* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
@@ -740,17 +744,20 @@ module.exports = "<div>\r\n    第一孙子组件\r\n</div>"
 /* 24 */,
 /* 25 */,
 /* 26 */,
-/* 27 */
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(3);
+var Vue = __webpack_require__(1);
 var child1 = __webpack_require__(8);
 var child2 = __webpack_require__(9);
-var tp = __webpack_require__(13);
+var tp = __webpack_require__(15);
 
 var pobj = new Vue({
 	element: $('.box1'),
