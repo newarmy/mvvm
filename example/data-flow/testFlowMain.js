@@ -23,7 +23,7 @@ var c1obj = new Vue({
         // 监听store里的tab1的变化
         k.store.on('tab1', function(data) {
             //alert(data);
-            k.element.html(data.content);
+            k.setData(data);
         })
     },
     //事件中的回调方法

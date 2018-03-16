@@ -5,7 +5,7 @@
 var extend = require('./util/extend');
 var request = require('./util/request');
 var extendClass = require('./util/extendClass');
-var eventBase = require('./eventBase');
+var eventBase = require('./util/eventBase');
 function ModelBase () {
 	//接收数据的属性
 	this.data = {};

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 29);
+/******/ 	return __webpack_require__(__webpack_require__.s = 28);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -101,6 +101,50 @@ module.exports = function (obj) {
 /***/ }),
 
 /***/ 1:
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+
+/***/ 14:
+/***/ (function(module, exports) {
+
+module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
+
+/***/ }),
+
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -135,21 +179,56 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 15:
-/***/ (function(module, exports) {
+/***/ 28:
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
+var baseComp = __webpack_require__(3);
+var tpl = __webpack_require__(14);
+var dom = $('.box');
+var tabComp = new baseComp({
+    element: dom,
+    isDev: true,
+    //做一些组件初始化操作
+    init: function () {
+        var k = this;
+        k.heads = k.element.find('li');
+        k.cons = k.element.find('#tabC').find('div');
+        k.heads.removeClass('cur').eq(0).addClass('cur');
+        k.cons.removeClass('cur').eq(0).addClass('cur');
+    },
+    // 注册事件
+    events: {
+        'click li': 'showCurrentDiv'
+    },
+    // 事件对应的行为函数
+    methods: {
+        // 事件对应的行为函数
+        showCurrentDiv: function (e, it) {
+            var k = this;
+            e.preventDefault();
+            var index = it.index();
+            k.heads.removeClass('cur').eq(index).addClass('cur');
+            k.cons.removeClass('cur').eq(index).addClass('cur');
+        }
+    },
+    template: tpl,
+    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
+})
+
+//添加到dom中
+tabComp.mounted()
+
 
 /***/ }),
 
-/***/ 2:
+/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(3);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 /**
@@ -295,8 +374,6 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
-           // console.log(k.element);
-            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -336,13 +413,20 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-    *
+     * 最好通过setData来更新组件的data数据
+     * (适用于没有子组件的组件)
     * */
     setData: function (data) {
       var k = this;
       k.data = data;
       k._generateHTML();
-      k.element.html(k._cackeHtml);
+      if(k._isRoot) {
+          k.element.html(k._cackeHtml);
+      } else {
+         var cacheDom = $(k._cackeHtml);
+         k.element.html(cacheDom.html());
+      }
+
     },
     _generateHTML: function() {
         var k = this;
@@ -354,8 +438,6 @@ extend(baseVM.prototype, eventBase, {
 
         if(isDev) {
             Log.log("genetate html");
-           // Log.log("k._hasChild =" + k._hasChild )
-           // Log.log('------------------------------------------');
         }
        if( k._hasChild ){
            k._joinChildHtml();
@@ -534,85 +616,6 @@ module.exports =  function(opt){
         isDev: opt.isDev
     });
 }
-
-/***/ }),
-
-/***/ 29:
-/***/ (function(module, exports, __webpack_require__) {
-
-var baseComp = __webpack_require__(2);
-var tpl = __webpack_require__(15);
-var dom = $('.box');
-var tabComp = new baseComp({
-    element: dom,
-    isDev: true,
-    //做一些组件初始化操作
-    init: function () {
-        var k = this;
-        k.heads = k.element.find('li');
-        k.cons = k.element.find('#tabC').find('div');
-        k.heads.removeClass('cur').eq(0).addClass('cur');
-        k.cons.removeClass('cur').eq(0).addClass('cur');
-    },
-    // 注册事件
-    events: {
-        'click li': 'showCurrentDiv'
-    },
-    // 事件对应的行为函数
-    methods: {
-        // 事件对应的行为函数
-        showCurrentDiv: function (e, it) {
-            var k = this;
-            e.preventDefault();
-            var index = it.index();
-            k.heads.removeClass('cur').eq(index).addClass('cur');
-            k.cons.removeClass('cur').eq(index).addClass('cur');
-        }
-    },
-    template: tpl,
-    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
-})
-
-//添加到dom中
-tabComp.mounted()
-
-
-/***/ }),
-
-/***/ 3:
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
 
 /***/ }),
 

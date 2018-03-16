@@ -148,8 +148,6 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
-           // console.log(k.element);
-            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -189,13 +187,20 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-    *
+     * 最好通过setData来更新组件的data数据
+     * (适用于没有子组件的组件)
     * */
     setData: function (data) {
       var k = this;
       k.data = data;
       k._generateHTML();
-      k.element.html(k._cackeHtml);
+      if(k._isRoot) {
+          k.element.html(k._cackeHtml);
+      } else {
+         var cacheDom = $(k._cackeHtml);
+         k.element.html(cacheDom.html());
+      }
+
     },
     _generateHTML: function() {
         var k = this;
@@ -207,8 +212,6 @@ extend(baseVM.prototype, eventBase, {
 
         if(isDev) {
             Log.log("genetate html");
-           // Log.log("k._hasChild =" + k._hasChild )
-           // Log.log('------------------------------------------');
         }
        if( k._hasChild ){
            k._joinChildHtml();

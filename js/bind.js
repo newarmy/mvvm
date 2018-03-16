@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 30);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -101,6 +101,43 @@ module.exports = function (obj) {
 /***/ }),
 
 /***/ 1:
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+
+/***/ 2:
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -135,14 +172,48 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 2:
+/***/ 29:
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Created by xinjundong on 2017/12/4.
+ */
+var baseComp = __webpack_require__(3)
+
+var dom1 = $('.test1');
+
+var comp = new baseComp({
+    element: dom1,
+    init: function () {
+      this.test()
+    },
+    events: {
+      'click': 'clickFunc'
+    },
+    methods: {
+        test: function() {
+            alert(this.testdata);
+        },
+        clickFunc: function () {
+            this.selfParam.testdata = "click";
+            this.test();
+        }
+    },
+    selfParam: {
+        testdata: 'dkdkdk'
+    }
+});
+
+/***/ }),
+
+/***/ 3:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(3);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 /**
@@ -288,8 +359,6 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
-           // console.log(k.element);
-            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -329,13 +398,20 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-    *
+     * 最好通过setData来更新组件的data数据
+     * (适用于没有子组件的组件)
     * */
     setData: function (data) {
       var k = this;
       k.data = data;
       k._generateHTML();
-      k.element.html(k._cackeHtml);
+      if(k._isRoot) {
+          k.element.html(k._cackeHtml);
+      } else {
+         var cacheDom = $(k._cackeHtml);
+         k.element.html(cacheDom.html());
+      }
+
     },
     _generateHTML: function() {
         var k = this;
@@ -347,8 +423,6 @@ extend(baseVM.prototype, eventBase, {
 
         if(isDev) {
             Log.log("genetate html");
-           // Log.log("k._hasChild =" + k._hasChild )
-           // Log.log('------------------------------------------');
         }
        if( k._hasChild ){
            k._joinChildHtml();
@@ -527,77 +601,6 @@ module.exports =  function(opt){
         isDev: opt.isDev
     });
 }
-
-/***/ }),
-
-/***/ 3:
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-
-/***/ 30:
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * Created by xinjundong on 2017/12/4.
- */
-var baseComp = __webpack_require__(2)
-
-var dom1 = $('.test1');
-
-var comp = new baseComp({
-    element: dom1,
-    init: function () {
-      this.test()
-    },
-    events: {
-      'click': 'clickFunc'
-    },
-    methods: {
-        test: function() {
-            alert(this.testdata);
-        },
-        clickFunc: function () {
-            this.selfParam.testdata = "click";
-            this.test();
-        }
-    },
-    selfParam: {
-        testdata: 'dkdkdk'
-    }
-});
 
 /***/ }),
 

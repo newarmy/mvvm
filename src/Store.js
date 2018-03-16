@@ -7,7 +7,7 @@
 */
 var extend = require('./util/extend');
 var extendClass = require('./util/extendClass');
-var eventBase = require('./eventBase');
+var eventBase = require('./util/eventBase');
 /**
 * 
 */

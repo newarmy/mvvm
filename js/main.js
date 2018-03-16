@@ -63,11 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 32);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ (function(module, exports) {
 
 
@@ -98,42 +99,8 @@ module.exports = function (obj) {
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
 
-
-/**
-* 继承工具方法
-*/
-var extend = __webpack_require__(0);
-module.exports = function (protoProps, staticProps) {
-	var parent = this;
-	var child;
-	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
-		child = protoProps.prototype.constructor;
-	} else {
-		child = function () {
-			return parent.apply(this, arguments);
-		};
-	}
-	//拷贝静态属性
-	extend(child, parent, staticProps);
-	//子类与父类之间的代理，使子类不能修改父类方法
-	var proxy = function() {
-		this.constructor = child;
-	};
-	proxy.prototype = parent.prototype;
-	child.prototype = new proxy();
-	
-	//拷贝原型属性
-	if (protoProps) extend(child.prototype, protoProps);
-	
-	return child;
-};
-
-/***/ }),
-/* 2 */,
-/* 3 */
+/***/ 1:
 /***/ (function(module, exports) {
 
 //�Զ����¼�����
@@ -169,104 +136,8 @@ module.exports = {
 };
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports) {
 
-
-/**
-* template
-*/
-
-var template = {
-	startTag: "<%",
-	endTag: "%>",
-	parse: function (str) {
-		var reg = /^=(.+)/;//来判断是变量还是语句
-		var startArr = str.split(this.startTag);//开始标识符分割的数组
-		var endArr;//结束标识符分割的数组
-		var variable;
-		var varArr;//
-        var temp;
-        var html;
-        var l = startArr.length;
-        if(startArr.length === 1) {
-        	html = 'var str= \''+str+'\'; return str;';
-        	return new Function('data', html);
-		}
-		html = ' var str=""; with(data) {';
-		for(var i = 0 ; i < l; i++) {
-			temp = startArr[i];
-			endArr = temp.split(this.endTag);
-			if(endArr.length === 1) {//纯字符串
-				html+='str+=\''+endArr[0]+'\';';
-			} else {//有变量或语句
-				variable = endArr[0];
-				varArr = variable.match(reg);
-				if(varArr && varArr.length === 2) {//是变量
-					
-					html +='str+='+ varArr[1]+';'; 
-					html += 'str+=\''+endArr[1]+'\';';
-				} else {
-					html += endArr[0];//是语句
-					html += 'str+=\''+endArr[1]+'\';';
-				}
-			}
-		}
-		html+='} return str;';
-		//console.log(html);
-		return new Function('data', html);
-	}
-};
-module.exports = template;
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */
+/***/ 15:
 /***/ (function(module, exports, __webpack_require__) {
 
 //数据加载处理模块
@@ -274,9 +145,9 @@ module.exports = {
 	opt.url： 数据的地址 
 */
 var extend = __webpack_require__(0);
-var request = __webpack_require__(26);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(7);
+var request = __webpack_require__(25);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 function ModelBase () {
 	//接收数据的属性
 	this.data = {};
@@ -396,7 +267,8 @@ ModelBase.extend = extendClass;
 module.exports = ModelBase;
 
 /***/ }),
-/* 17 */
+
+/***/ 16:
 /***/ (function(module, exports, __webpack_require__) {
 
 //集中管理状态的基类
@@ -407,8 +279,8 @@ module.exports = ModelBase;
 			3. 公用这个状态的组件根据接收到的数据，触发相应的行为
 */
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(3);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 /**
 * 
 */
@@ -484,14 +356,15 @@ stateBus.extend = extendClass;
 module.exports = stateBus;
 
 /***/ }),
-/* 18 */
+
+/***/ 17:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm基类,
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(7);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 var tplObj = __webpack_require__(4);
 /**
 	opt说明：
@@ -647,14 +520,43 @@ VM.extend = extendClass;
 module.exports = VM;
 
 /***/ }),
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */
+
+/***/ 2:
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+* 继承工具方法
+*/
+var extend = __webpack_require__(0);
+module.exports = function (protoProps, staticProps) {
+	var parent = this;
+	var child;
+	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
+		child = protoProps.prototype.constructor;
+	} else {
+		child = function () {
+			return parent.apply(this, arguments);
+		};
+	}
+	//拷贝静态属性
+	extend(child, parent, staticProps);
+	//子类与父类之间的代理，使子类不能修改父类方法
+	var proxy = function() {
+		this.constructor = child;
+	};
+	proxy.prototype = parent.prototype;
+	child.prototype = new proxy();
+	
+	//拷贝原型属性
+	if (protoProps) extend(child.prototype, protoProps);
+	
+	return child;
+};
+
+/***/ }),
+
+/***/ 25:
 /***/ (function(module, exports) {
 
 
@@ -691,21 +593,17 @@ module.exports = function (opt) {
 
 
 /***/ }),
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */
+
+/***/ 31:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var ModelBase = __webpack_require__(16);
-var VM = __webpack_require__(18);
-var StateBus = __webpack_require__(17);
+var ModelBase = __webpack_require__(15);
+var VM = __webpack_require__(17);
+var StateBus = __webpack_require__(16);
 
 var stateObj = {
 	subId: 'subId'
@@ -749,5 +647,58 @@ cv.toGetData({
 	dataType: 'json'
 });
 
+/***/ }),
+
+/***/ 4:
+/***/ (function(module, exports) {
+
+
+/**
+* template
+*/
+
+var template = {
+	startTag: "<%",
+	endTag: "%>",
+	parse: function (str) {
+		var reg = /^=(.+)/;//来判断是变量还是语句
+		var startArr = str.split(this.startTag);//开始标识符分割的数组
+		var endArr;//结束标识符分割的数组
+		var variable;
+		var varArr;//
+        var temp;
+        var html;
+        var l = startArr.length;
+        if(startArr.length === 1) {
+        	html = 'var str= \''+str+'\'; return str;';
+        	return new Function('data', html);
+		}
+		html = ' var str=""; with(data) {';
+		for(var i = 0 ; i < l; i++) {
+			temp = startArr[i];
+			endArr = temp.split(this.endTag);
+			if(endArr.length === 1) {//纯字符串
+				html+='str+=\''+endArr[0]+'\';';
+			} else {//有变量或语句
+				variable = endArr[0];
+				varArr = variable.match(reg);
+				if(varArr && varArr.length === 2) {//是变量
+					
+					html +='str+='+ varArr[1]+';'; 
+					html += 'str+=\''+endArr[1]+'\';';
+				} else {
+					html += endArr[0];//是语句
+					html += 'str+=\''+endArr[1]+'\';';
+				}
+			}
+		}
+		html+='} return str;';
+		//console.log(html);
+		return new Function('data', html);
+	}
+};
+module.exports = template;
+
 /***/ })
-/******/ ]);
+
+/******/ });

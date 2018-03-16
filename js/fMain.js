@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -99,6 +99,42 @@ module.exports = function (obj) {
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -132,14 +168,14 @@ module.exports = function (protoProps, staticProps) {
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(3);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 /**
@@ -285,8 +321,6 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
-           // console.log(k.element);
-            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -326,13 +360,20 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-    *
+     * 最好通过setData来更新组件的data数据
+     * (适用于没有子组件的组件)
     * */
     setData: function (data) {
       var k = this;
       k.data = data;
       k._generateHTML();
-      k.element.html(k._cackeHtml);
+      if(k._isRoot) {
+          k.element.html(k._cackeHtml);
+      } else {
+         var cacheDom = $(k._cackeHtml);
+         k.element.html(cacheDom.html());
+      }
+
     },
     _generateHTML: function() {
         var k = this;
@@ -344,8 +385,6 @@ extend(baseVM.prototype, eventBase, {
 
         if(isDev) {
             Log.log("genetate html");
-           // Log.log("k._hasChild =" + k._hasChild )
-           // Log.log('------------------------------------------');
         }
        if( k._hasChild ){
            k._joinChildHtml();
@@ -526,42 +565,6 @@ module.exports =  function(opt){
 }
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
@@ -630,14 +633,13 @@ module.exports = {
 
 /***/ }),
 /* 6 */,
-/* 7 */,
-/* 8 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
-var Flow = __webpack_require__(25);
-var ajax = __webpack_require__(21);
+var Flow = __webpack_require__(24);
+var ajax = __webpack_require__(20);
 //数据流控制类
 var flow = Flow({
     state: {
@@ -667,40 +669,40 @@ module.exports = flow;
 
 
 /***/ }),
+/* 8 */,
 /* 9 */,
-/* 10 */,
-/* 11 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    <%if(dd) {%>\r\n    <span><%=dd%></span>\r\n    <%}%>\r\n    第一子组件\r\n</div>"
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
+/* 13 */,
 /* 14 */,
 /* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
-/* 20 */,
-/* 21 */
+/* 20 */
 /***/ (function(module, exports) {
 
 // 模拟异步请求
 var ajax = function (data, cb) {
     setTimeout( function () {
-        cb({content: 'test tab '+ data.id})
+        cb({dd: 'async data', cc: 'a async data'})
     }, 1000)
 }
 
@@ -708,10 +710,10 @@ module.exports = ajax;
 
 
 /***/ }),
+/* 21 */,
 /* 22 */,
 /* 23 */,
-/* 24 */,
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -722,7 +724,7 @@ module.exports = ajax;
  *
  **/
 var extend = __webpack_require__(0);
-var eventBase = __webpack_require__(3);
+var eventBase = __webpack_require__(1);
 function FlowManager (opt) {
 	this.state = opt.state;
 	this.actions = opt.actions;
@@ -762,16 +764,16 @@ module.exports = function (opt) {
 };
 
 /***/ }),
-/* 26 */,
-/* 27 */
+/* 25 */,
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var Vue = __webpack_require__(2);
-var t1 = __webpack_require__(11);
-var t2 = __webpack_require__(12);
-var tp = __webpack_require__(13);
-var store = __webpack_require__(8);
+var Vue = __webpack_require__(3);
+var t1 = __webpack_require__(10);
+var t2 = __webpack_require__(11);
+var tp = __webpack_require__(12);
+var store = __webpack_require__(7);
 
 // 子组件1
 var c1obj = new Vue({
@@ -791,7 +793,7 @@ var c1obj = new Vue({
         // 监听store里的tab1的变化
         k.store.on('tab1', function(data) {
             //alert(data);
-            k.element.html(data.content);
+            k.setData(data);
         })
     },
     //事件中的回调方法

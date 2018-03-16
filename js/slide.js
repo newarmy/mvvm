@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 33);
+/******/ 	return __webpack_require__(__webpack_require__.s = 32);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -101,48 +101,50 @@ module.exports = function (obj) {
 /***/ }),
 
 /***/ 1:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-
-/**
-* 继承工具方法
-*/
-var extend = __webpack_require__(0);
-module.exports = function (protoProps, staticProps) {
-	var parent = this;
-	var child;
-	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
-		child = protoProps.prototype.constructor;
-	} else {
-		child = function () {
-			return parent.apply(this, arguments);
-		};
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
 	}
-	//拷贝静态属性
-	extend(child, parent, staticProps);
-	//子类与父类之间的代理，使子类不能修改父类方法
-	var proxy = function() {
-		this.constructor = child;
-	};
-	proxy.prototype = parent.prototype;
-	child.prototype = new proxy();
-	
-	//拷贝原型属性
-	if (protoProps) extend(child.prototype, protoProps);
-	
-	return child;
 };
 
 /***/ }),
 
-/***/ 19:
+/***/ 18:
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(3);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 var EVENT = __webpack_require__(6)
@@ -509,7 +511,7 @@ module.exports =  function(opt){
 
 /***/ }),
 
-/***/ 20:
+/***/ 19:
 /***/ (function(module, exports) {
 
   //touch事件相关
@@ -552,51 +554,49 @@ module.exports =  function(opt){
 
 /***/ }),
 
-/***/ 3:
-/***/ (function(module, exports) {
+/***/ 2:
+/***/ (function(module, exports, __webpack_require__) {
 
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
+
+/**
+* 继承工具方法
+*/
+var extend = __webpack_require__(0);
+module.exports = function (protoProps, staticProps) {
+	var parent = this;
+	var child;
+	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
+		child = protoProps.prototype.constructor;
+	} else {
+		child = function () {
+			return parent.apply(this, arguments);
+		};
 	}
+	//拷贝静态属性
+	extend(child, parent, staticProps);
+	//子类与父类之间的代理，使子类不能修改父类方法
+	var proxy = function() {
+		this.constructor = child;
+	};
+	proxy.prototype = parent.prototype;
+	child.prototype = new proxy();
+	
+	//拷贝原型属性
+	if (protoProps) extend(child.prototype, protoProps);
+	
+	return child;
 };
 
 /***/ }),
 
-/***/ 33:
+/***/ 32:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Created by xinjundong on 2017/12/4.
  */
-var BaseComp = __webpack_require__(19)
-var touchEvent = __webpack_require__(20)
+var BaseComp = __webpack_require__(18)
+var touchEvent = __webpack_require__(19)
 var start = touchEvent.touchStart;
 var move = touchEvent.touchMove;
 var cancel = touchEvent.touchCancel;

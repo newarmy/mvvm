@@ -1,7 +1,7 @@
 // 模拟异步请求
 var ajax = function (data, cb) {
     setTimeout( function () {
-        cb({content: 'test tab '+ data.id})
+        cb({dd: 'async data', cc: 'a async data'})
     }, 1000)
 }
 

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 28);
+/******/ 	return __webpack_require__(__webpack_require__.s = 27);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -99,6 +99,42 @@ module.exports = function (obj) {
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+//�Զ����¼�����
+module.exports = {
+	on: function(type, callback, thisArg) {
+		this.events || (this.events = {});
+		thisArg = thisArg || this;
+		if(this.events[type]) {
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		} else {
+			this.events[type] = [];
+			this.events[type].push({cb: callback, thisArg: thisArg});
+		}
+	},
+	off: function(type, callback) {
+		if(!this.events[type]) {
+			return;
+		}
+		this.events[type] = [];
+	},
+	trigger: function(type, opt) {
+		var funcs = this.events[type];
+		if(!funcs) {
+			return;
+		}
+		var len = funcs.length;
+		for(var i =0; i < len; i++) {
+			var cb = funcs[i].cb;
+			var thisArg = funcs[i].thisArg;
+			cb.call(thisArg, opt);
+		}
+	}
+};
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -132,14 +168,14 @@ module.exports = function (protoProps, staticProps) {
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
 var extend = __webpack_require__(0);
-var extendClass = __webpack_require__(1);
-var eventBase = __webpack_require__(3);
+var extendClass = __webpack_require__(2);
+var eventBase = __webpack_require__(1);
 var tplObj = __webpack_require__(4);
 var Log = __webpack_require__(5);
 /**
@@ -285,8 +321,6 @@ extend(baseVM.prototype, eventBase, {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
-           // console.log(k.element);
-            //console.log(k._cackeHtml);
             k.element.append(k._cackeHtml);
             k.init && k.init();
             k._addEventToDom();
@@ -326,13 +360,20 @@ extend(baseVM.prototype, eventBase, {
 
 	},
     /**
-    *
+     * 最好通过setData来更新组件的data数据
+     * (适用于没有子组件的组件)
     * */
     setData: function (data) {
       var k = this;
       k.data = data;
       k._generateHTML();
-      k.element.html(k._cackeHtml);
+      if(k._isRoot) {
+          k.element.html(k._cackeHtml);
+      } else {
+         var cacheDom = $(k._cackeHtml);
+         k.element.html(cacheDom.html());
+      }
+
     },
     _generateHTML: function() {
         var k = this;
@@ -344,8 +385,6 @@ extend(baseVM.prototype, eventBase, {
 
         if(isDev) {
             Log.log("genetate html");
-           // Log.log("k._hasChild =" + k._hasChild )
-           // Log.log('------------------------------------------');
         }
        if( k._hasChild ){
            k._joinChildHtml();
@@ -526,42 +565,6 @@ module.exports =  function(opt){
 }
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-//�Զ����¼�����
-module.exports = {
-	on: function(type, callback, thisArg) {
-		this.events || (this.events = {});
-		thisArg = thisArg || this;
-		if(this.events[type]) {
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		} else {
-			this.events[type] = [];
-			this.events[type].push({cb: callback, thisArg: thisArg});
-		}
-	},
-	off: function(type, callback) {
-		if(!this.events[type]) {
-			return;
-		}
-		this.events[type] = [];
-	},
-	trigger: function(type, opt) {
-		var funcs = this.events[type];
-		if(!funcs) {
-			return;
-		}
-		var len = funcs.length;
-		for(var i =0; i < len; i++) {
-			var cb = funcs[i].cb;
-			var thisArg = funcs[i].thisArg;
-			cb.call(thisArg, opt);
-		}
-	}
-};
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
@@ -631,17 +634,16 @@ module.exports = {
 /***/ }),
 /* 6 */,
 /* 7 */,
-/* 8 */,
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(2);
-var t1 = __webpack_require__(22);
-var tg = __webpack_require__(24);
+var Vue = __webpack_require__(3);
+var t1 = __webpack_require__(21);
+var tg = __webpack_require__(23);
 
 var gobj = new Vue({
     template: tg,
@@ -675,15 +677,15 @@ var c1obj = new Vue({
 module.exports = c1obj
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(2);
-var t2 = __webpack_require__(23);
+var Vue = __webpack_require__(3);
+var t2 = __webpack_require__(22);
 
 var c2obj = new Vue({
     template: t2,
@@ -701,54 +703,54 @@ var c2obj = new Vue({
 module.exports = c2obj
 
 /***/ }),
+/* 10 */,
 /* 11 */,
 /* 12 */,
-/* 13 */,
-/* 14 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
+/* 14 */,
 /* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */,
-/* 22 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第一子组件\r\n    {{grandSon}}\r\n    <p>测试</p>\r\n</div>"
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    第一孙子组件\r\n</div>"
 
 /***/ }),
+/* 24 */,
 /* 25 */,
 /* 26 */,
-/* 27 */,
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(2);
-var child1 = __webpack_require__(9);
-var child2 = __webpack_require__(10);
-var tp = __webpack_require__(14);
+var Vue = __webpack_require__(3);
+var child1 = __webpack_require__(8);
+var child2 = __webpack_require__(9);
+var tp = __webpack_require__(13);
 
 var pobj = new Vue({
 	element: $('.box1'),
