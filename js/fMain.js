@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 29);
+/******/ 	return __webpack_require__(__webpack_require__.s = 31);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -169,6 +169,7 @@ function baseVM(opt) {
     this._hasChild = false;//是否有子组件
     this._isRoot = true;//是否为根组件
     this._id = null;//获得子组件容器id
+    this.isMounted = false; // 是否添加到页面中。
 	isDev = opt.isDev || false;
 	this._prepareFunc();
 }
@@ -246,13 +247,14 @@ extend(baseVM.prototype, eventBase, {
     },
     /**
      * 将组件添加到页面中
+     * param：路由传来的参数 (如果有路由的)
      * */
-    mounted: function() {
+    mounted: function(param) {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
             k.element.append(k._cackeHtml);
-            k.init && k.init();
+            k.init && k.init(param);
             k._addEventToDom();
             if(isDev){
                 Log.log('--------add Dom to document-----------');
@@ -261,7 +263,7 @@ extend(baseVM.prototype, eventBase, {
             for(var key in k.childComponents) {
                 k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
                 k.childComponents[key].store = k.store;
-                k.childComponents[key].mounted();
+                k.childComponents[key].mounted(param);
             }
         } else {//如果不是是根组件
             k.init && k.init();
@@ -273,13 +275,15 @@ extend(baseVM.prototype, eventBase, {
                 k.childComponents[key].mounted();
             }
         }
+        k.isMounted = true;
 
     },
     /***
 	 * 组件的初始化操作
 	 * 子类重写
+     * param：路由传来的参数
 	 * */
-    init: function() {
+    init: function (param) {
 
 	},
     /***
@@ -356,6 +360,7 @@ extend(baseVM.prototype, eventBase, {
     destroy: function() {
         var k = this;
         k.removeEvents();
+        k.isMounted = false;
         //k.element = null;
         for(var key in k.childComponents) {
             k.childComponents[key].removeEvents();
@@ -366,14 +371,15 @@ extend(baseVM.prototype, eventBase, {
     },
 	removeEvents: function() {
 		var k = this, arr;
-		if(!k.eventArr) {
+        var len = k._eventArr.length;
+		if(len === 0) {
 		    return;
         }
-		for(var i = 0, len = k.eventArr.length; i < len; i++) {
-			arr = k.eventArr[i];
+		for(var i = 0; i < len; i++) {
+			arr = k._eventArr[i];
 			k.element.off(arr[0]);
 		}
-        k.eventArr = [];
+        // k._eventArr = []; 不要清空
         if(isDev){
             Log.log('remove Event');
         }
@@ -642,8 +648,8 @@ module.exports = template;
 
 //vm类, 
 
-var Flow = __webpack_require__(27);
-var ajax = __webpack_require__(20);
+var Flow = __webpack_require__(29);
+var ajax = __webpack_require__(21);
 //数据流控制类
 var flow = Flow({
     state: {
@@ -677,30 +683,31 @@ module.exports = flow;
 /* 9 */,
 /* 10 */,
 /* 11 */,
-/* 12 */
+/* 12 */,
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    <%if(dd) {%>\r\n    <span><%=dd%></span>\r\n    <%}%>\r\n    第一子组件\r\n</div>"
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
-/* 15 */,
 /* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
-/* 20 */
+/* 20 */,
+/* 21 */
 /***/ (function(module, exports) {
 
 // 模拟异步请求
@@ -714,13 +721,14 @@ module.exports = ajax;
 
 
 /***/ }),
-/* 21 */,
 /* 22 */,
 /* 23 */,
 /* 24 */,
 /* 25 */,
 /* 26 */,
-/* 27 */
+/* 27 */,
+/* 28 */,
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -771,15 +779,15 @@ module.exports = function (opt) {
 };
 
 /***/ }),
-/* 28 */,
-/* 29 */
+/* 30 */,
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 var Vue = __webpack_require__(1);
-var t1 = __webpack_require__(12);
-var t2 = __webpack_require__(13);
-var tp = __webpack_require__(14);
+var t1 = __webpack_require__(13);
+var t2 = __webpack_require__(14);
+var tp = __webpack_require__(15);
 var store = __webpack_require__(7);
 
 // 子组件1

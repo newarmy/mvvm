@@ -1,11 +1,12 @@
 /**
  * 路由类
+ * 如果路由中有参数，会解析#/path?a=b&c=d成为 {url: '/path?a=b&c=d', a: b, c: d}
  * */
 
 function Router(routes) {
     this.routes = routes || {};
     this.currentUrl = '/';
-    this.beforeUrl = '/';
+    this.beforeUrl = '';
 }
 //初始化路由事件
 Router.prototype.initEvent = function () {

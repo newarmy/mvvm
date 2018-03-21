@@ -66,6 +66,7 @@ function baseVM(opt) {
     this._hasChild = false;//是否有子组件
     this._isRoot = true;//是否为根组件
     this._id = null;//获得子组件容器id
+    this.isMounted = false; // 是否添加到页面中。
 	isDev = opt.isDev || false;
 	this._prepareFunc();
 }
@@ -143,13 +144,14 @@ extend(baseVM.prototype, eventBase, {
     },
     /**
      * 将组件添加到页面中
+     * param：路由传来的参数 (如果有路由的)
      * */
-    mounted: function() {
+    mounted: function(param) {
 	    var k = this;
         //如果是根组件
         if(k._isRoot) {
             k.element.append(k._cackeHtml);
-            k.init && k.init();
+            k.init && k.init(param);
             k._addEventToDom();
             if(isDev){
                 Log.log('--------add Dom to document-----------');
@@ -158,7 +160,7 @@ extend(baseVM.prototype, eventBase, {
             for(var key in k.childComponents) {
                 k.childComponents[key].element = k.element.find(k.childComponents[key]._id);
                 k.childComponents[key].store = k.store;
-                k.childComponents[key].mounted();
+                k.childComponents[key].mounted(param);
             }
         } else {//如果不是是根组件
             k.init && k.init();
@@ -170,13 +172,15 @@ extend(baseVM.prototype, eventBase, {
                 k.childComponents[key].mounted();
             }
         }
+        k.isMounted = true;
 
     },
     /***
 	 * 组件的初始化操作
 	 * 子类重写
+     * param：路由传来的参数
 	 * */
-    init: function() {
+    init: function (param) {
 
 	},
     /***
@@ -253,6 +257,7 @@ extend(baseVM.prototype, eventBase, {
     destroy: function() {
         var k = this;
         k.removeEvents();
+        k.isMounted = false;
         //k.element = null;
         for(var key in k.childComponents) {
             k.childComponents[key].removeEvents();
@@ -263,14 +268,15 @@ extend(baseVM.prototype, eventBase, {
     },
 	removeEvents: function() {
 		var k = this, arr;
-		if(!k.eventArr) {
+        var len = k._eventArr.length;
+		if(len === 0) {
 		    return;
         }
-		for(var i = 0, len = k.eventArr.length; i < len; i++) {
-			arr = k.eventArr[i];
+		for(var i = 0; i < len; i++) {
+			arr = k._eventArr[i];
 			k.element.off(arr[0]);
 		}
-        k.eventArr = [];
+        // k._eventArr = []; 不要清空
         if(isDev){
             Log.log('remove Event');
         }
