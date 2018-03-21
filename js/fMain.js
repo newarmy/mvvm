@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "http://localhost:63343/mvvm/js/";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 31);
@@ -643,13 +643,22 @@ module.exports = template;
 
 /***/ }),
 /* 6 */,
-/* 7 */
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
 
-var Flow = __webpack_require__(29);
-var ajax = __webpack_require__(21);
+var Flow = __webpack_require__(30);
+var ajax = __webpack_require__(26);
 //数据流控制类
 var flow = Flow({
     state: {
@@ -679,35 +688,31 @@ module.exports = flow;
 
 
 /***/ }),
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */
+/* 17 */,
+/* 18 */,
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    <%if(dd) {%>\r\n    <span><%=dd%></span>\r\n    <%}%>\r\n    第一子组件\r\n</div>"
 
 /***/ }),
-/* 14 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 15 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
 
 /***/ }),
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */
 /***/ (function(module, exports) {
 
 // 模拟异步请求
@@ -721,14 +726,10 @@ module.exports = ajax;
 
 
 /***/ }),
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */,
 /* 27 */,
 /* 28 */,
-/* 29 */
+/* 29 */,
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -779,16 +780,15 @@ module.exports = function (opt) {
 };
 
 /***/ }),
-/* 30 */,
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 var Vue = __webpack_require__(1);
-var t1 = __webpack_require__(13);
-var t2 = __webpack_require__(14);
-var tp = __webpack_require__(15);
-var store = __webpack_require__(7);
+var t1 = __webpack_require__(19);
+var t2 = __webpack_require__(20);
+var tp = __webpack_require__(21);
+var store = __webpack_require__(16);
 
 // 子组件1
 var c1obj = new Vue({

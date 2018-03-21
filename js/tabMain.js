@@ -60,10 +60,10 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "http://localhost:63343/mvvm/js/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 34);
+/******/ 	return __webpack_require__(__webpack_require__.s = 36);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -508,13 +508,6 @@ module.exports =  function(opt){
 
 /***/ }),
 
-/***/ 17:
-/***/ (function(module, exports) {
-
-module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
-
-/***/ }),
-
 /***/ 2:
 /***/ (function(module, exports) {
 
@@ -549,6 +542,13 @@ module.exports = {
 		}
 	}
 };
+
+/***/ }),
+
+/***/ 23:
+/***/ (function(module, exports) {
+
+module.exports = "<ul id=\"tabH\" style=\"overflow: hidden\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <li style=\"width: 100px; text-align:center; line-height:40px;float:left;\"><%=arr[i].head%></li>\r\n    <%}%>\r\n</ul>\r\n<div id=\"tabC\">\r\n    <%for(var i = 0, len = arr.length; i < len; i++) {%>\r\n    <div style=\"width:100%;height:200px;background:#ff0;color:#000;\"><%=arr[i].content%></div>\r\n    <%}%>\r\n</div>"
 
 /***/ }),
 
@@ -587,11 +587,11 @@ module.exports = function (protoProps, staticProps) {
 
 /***/ }),
 
-/***/ 34:
+/***/ 36:
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseComp = __webpack_require__(1);
-var tpl = __webpack_require__(17);
+var tpl = __webpack_require__(23);
 var dom = $('.box');
 var tabComp = new baseComp({
     element: dom,

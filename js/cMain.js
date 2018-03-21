@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "http://localhost:63343/mvvm/js/";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 32);
@@ -644,7 +644,16 @@ module.exports = template;
 /***/ }),
 /* 6 */,
 /* 7 */,
-/* 8 */
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
@@ -652,8 +661,8 @@ module.exports = template;
 
 */
 var Vue = __webpack_require__(1);
-var t1 = __webpack_require__(22);
-var tg = __webpack_require__(24);
+var t1 = __webpack_require__(27);
+var tg = __webpack_require__(29);
 
 var gobj = new Vue({
     template: tg,
@@ -687,7 +696,7 @@ var c1obj = new Vue({
 module.exports = c1obj
 
 /***/ }),
-/* 9 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //vm类, 
@@ -695,7 +704,7 @@ module.exports = c1obj
 
 */
 var Vue = __webpack_require__(1);
-var t2 = __webpack_require__(23);
+var t2 = __webpack_require__(28);
 
 var c2obj = new Vue({
     template: t2,
@@ -713,46 +722,37 @@ var c2obj = new Vue({
 module.exports = c2obj
 
 /***/ }),
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */
-/***/ (function(module, exports) {
-
-module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
-
-/***/ }),
-/* 17 */,
-/* 18 */,
 /* 19 */,
 /* 20 */,
 /* 21 */,
 /* 22 */
 /***/ (function(module, exports) {
 
+module.exports = "<div>\r\n    <ul><li>tab1</li><li>tab2</li></ul>\r\n    <div class=\"c\">\r\n        {{comp1}}{{comp2}}\r\n    </div>\r\n</div>"
+
+/***/ }),
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */
+/***/ (function(module, exports) {
+
 module.exports = "<div class=\"d\">\r\n    第一子组件\r\n    {{grandSon}}\r\n    <p>测试</p>\r\n</div>"
 
 /***/ }),
-/* 23 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ }),
-/* 24 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = "<div>\r\n    第一孙子组件\r\n</div>"
 
 /***/ }),
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
 /* 30 */,
 /* 31 */,
 /* 32 */
@@ -763,9 +763,9 @@ module.exports = "<div>\r\n    第一孙子组件\r\n</div>"
 
 */
 var Vue = __webpack_require__(1);
-var child1 = __webpack_require__(8);
-var child2 = __webpack_require__(9);
-var tp = __webpack_require__(16);
+var child1 = __webpack_require__(17);
+var child2 = __webpack_require__(18);
+var tp = __webpack_require__(22);
 
 var pobj = new Vue({
 	element: $('.box1'),

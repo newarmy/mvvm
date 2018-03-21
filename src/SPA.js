@@ -18,8 +18,18 @@ function SPA (opt) {
 }
 extend(SPA.prototype, Router, {
     register: function (path, Comp) {
-        this.route(path, function (param) {
-            Comp.mounted(param);
+        var k = this;
+        k.route(path, function (param) {
+            // 异步组件
+            if(typeof Comp === 'function') {
+                Comp().then(function(module) {
+                    k.routeTable[path]= module;
+                    module.mounted();
+                });
+            } else {
+                Comp.mounted(param);
+            }
+
         });
     },
     init: function () {
@@ -106,8 +116,6 @@ extend(SPA.prototype, Router, {
               this._destroyComp();
           }
       }
-
-
     },
     /**
      *注销前一个页面组件

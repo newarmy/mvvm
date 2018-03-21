@@ -9,6 +9,8 @@ module.exports ={
 		tabMain: './example/single/singleComp.js',
         cMain: './example/muiti/combinationMain.js',
         rMain: './example/route/routeMain.js',
+        lazyMain: './example/route/lazyRoute.js',
+        hookMain: './example/route/routeHook.js',
 		fMain: './example/data-flow/testFlowMain.js',
         event: './test/event/eventTest.js',
         bind: './test/bind/bindTest.js',
@@ -16,7 +18,9 @@ module.exports ={
 	},
 	output: {
 		path: path.resolve(__dirname, 'js'),
-		filename: '[name].js'
+        chunkFilename: '[id].js',
+		filename: '[name].js',
+        publicPath: 'http://localhost:63343/mvvm/js/'
 	},
 	devServer: {//
 	  contentBase: path.join(__dirname),//基本路径

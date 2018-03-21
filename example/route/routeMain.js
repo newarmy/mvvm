@@ -10,17 +10,8 @@ var table = {
     '/test': child2,
     '/login': child3
 };
-
 var spa = new SPA({
-    table:table,
-    beforeRouter: function (curUrl) {
-        console.log('hook = '+curUrl);
-        if(curUrl === '/') {
-            this.next();
-        } else {
-            this.next('/login');
-        }
-    }
+    table:table
 });
 spa.init();
 

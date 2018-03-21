@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN" style="font-size:30px;">
+<head >
+	<title>懒加载路由</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta name="apple-touch-fullscreen" content="YES" />
+	<meta name="HandheldFriendly" content="true">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="format-detection" content="telephone=no">
+	<style>
+		*{padding: 0;margin: 0;}
+		ul{overflow: hidden}
+		ul,li{    list-style:none;}
+		ul li{
+			background:blue;
+			color:#fff;
+			font-size:20px;
+			float:left;
+			padding:10px;
+		}
+		ul .cur{
+			background:red;
+		}
+		.c{
+			background: yellow;
+			height:160px;
+		}
+		.c div{
+			display: none;
+			font-size:25px;
+		}
+		.c .cur{
+			display: block;
+		}
+	</style>
+</head>
+<body >
+<a href="#/">home</a><br>
+<a href="#/test">test</a>
+<a href="#/login">login</a>
+<br>
+	<div class='box1'>
+	</div>
+		<script src="../../js/jquery.js"></script>
+		<!--<script src="./js/main.js"></script> -->
+		<script src="../../js/lazyMain.js"></script>
+	</div>
+</body>
+</html>
