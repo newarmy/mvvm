@@ -3,15 +3,25 @@
 一个简单MVVM框架。
 
 1. 怎么使用框架来创建组件?
+
+
 1.1  引入 var BaseComp = require('../../src/newBaseComp.js');
+
+
 1.2  创建组件
+
    var selfComp = new BaseComp(opt);
+
    opt参数说明
+
+
           {
              /**
              *组件的初始函数
              */
+
              init: opt.init,
+
              /**
               事件的回调函数 和 一些自定义函数 （会代理到组件实例中）
               如
@@ -20,13 +30,16 @@
                  }
 
               */
+
              methods: opt.methods,
+
              /**
               事件列表， 事件都绑定到element中, clickhandler定义在methods中
                如{
                  'click li', 'clickhandler'
                }
              */
+
              events: opt.events,
 
              // 组件容器dom
