@@ -1,37 +1,51 @@
 webpackJsonp([1],{
 
-/***/ 14:
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
-
-/***/ }),
-
-/***/ 8:
+/***/ 26:
 /***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _componentFactory = __webpack_require__(13);
+
+var _componentFactory2 = _interopRequireDefault(_componentFactory);
+
+var _child = __webpack_require__(72);
+
+var _child2 = _interopRequireDefault(_child);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //vm类, 
 /**
 
 */
-var Vue = __webpack_require__(1);
-var t2 = __webpack_require__(14);
-
-var c2obj = new Vue({
+var c2obj = new _componentFactory2.default({
     element: $('.box1'),
-    template: t2,
+    template: _child2.default,
     isDev: true,
     events: {
         'click': 'show'
     },
     methods: {
-        show: function(e){
+        show: function show(e) {
             alert(e.target.innerHTML);
         }
     }
-})
+});
 
-module.exports = c2obj
+exports.default = c2obj;
+
+/***/ }),
+
+/***/ 72:
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"d\">\r\n    第二子组件\r\n</div>"
 
 /***/ })
 

@@ -2,10 +2,12 @@
 /**
 	opt.url： 数据的地址 
 */
-var extend = require('./util/extend');
-var request = require('./util/request');
-var extendClass = require('./util/extendClass');
-var eventBase = require('./util/eventBase');
+import extend from'./util/extend';
+import request from './util/request';
+import extendClass from './util/extendClass';
+import EventBase from './util/eventBase';
+
+let eventBase = new EventBase();
 function ajax (opt) {
 	this.opt = opt;
 	this._successFunc = null;
@@ -21,7 +23,7 @@ function ajax (opt) {
 }
 extend(ajax.prototype, eventBase, {
 	 _ajax: function (opt) {
-		var k = this;
+		let k = this;
 		opt.timeout = 10000;
 		k._successFunc = opt.success;
 		k._errorFunc = opt.error;
@@ -45,13 +47,13 @@ extend(ajax.prototype, eventBase, {
 
 	//请求接口
 	request: function (opt) {
-		var k = this;
-		var isArray = $.isArray(opt);
+		let k = this;
+		let isArray = $.isArray(opt);
 		k._requestCount = 0;
 		k.data ={};
 		if(isArray) {
 			k._totalRequest = opt.length;
-			for(var i =0; i< k._totalRequest; i++) {
+			for(let i =0; i< k._totalRequest; i++) {
 				(function(i) {
 					if(i === 0) {
 						k._mainName = opt[i].context.name;
@@ -71,4 +73,4 @@ extend(ajax.prototype, eventBase, {
 	}
 });
 ajax.extend = extendClass;
-module.exports = ajax;
+export default ajax;

@@ -2,10 +2,12 @@
 /**
 	opt.url： 数据的地址 
 */
-var extend = require('./util/extend');
-var request = require('./util/request');
-var extendClass = require('./util/extendClass');
-var eventBase = require('./util/eventBase');
+import extend from './util/extend';
+import request from './util/request';
+import extendClass from './util/extendClass';
+import EventBase from './util/eventBase';
+
+let eventBase = new EventBase();
 function ModelBase () {
 	//接收数据的属性
 	this.data = {};
@@ -17,7 +19,7 @@ function ModelBase () {
 }
 extend(ModelBase.prototype, eventBase, {
 	 _ajax: function (opt) {
-		var k = this;
+		let k = this;
 		//var successFunc = opt.success;
 		//var errorFunc = opt.error;
 		opt.timeout = 10000;
@@ -86,21 +88,21 @@ extend(ModelBase.prototype, eventBase, {
 	*    }
 	* */
 	setRequestParam: function(requestParam) {
-		var k = this;
+		let k = this;
 		k.requestParam = requestParam;
 	},
 	//请求接口
 	request: function (opt) {
-		var k = this;
+		let k = this;
 		if(!opt){
 			opt = k.requestParam;
 		}
-		var isArray = $.isArray(opt);
+		let isArray = $.isArray(opt);
 		k.requestCount = 0;
 		k.data ={};
 		if(isArray) {
 			k.totalRequest = opt.length;
-			for(var i =0; i< k.totalRequest; i++) {
+			for(let i =0; i< k.totalRequest; i++) {
 				(function(i) {
 					if(i === 0) {
 						k.mainName = opt[i].context.name;
@@ -122,4 +124,4 @@ extend(ModelBase.prototype, eventBase, {
 
 ModelBase.extend = extendClass;
 
-module.exports = ModelBase;
+export default ModelBase;

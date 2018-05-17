@@ -2,9 +2,9 @@
 /**
 
 */
-var Vue = require('../../src/newBaseComp');
-var t1 = require('./combinationTemplate/child1.html');
-var tg = require('./combinationTemplate/gson.html');
+import Vue from  '../../src/componentFactory';
+import t1 from './combinationTemplate/child1.html';
+import tg from './combinationTemplate/gson.html';
 
 var gobj = new Vue({
     template: tg,
@@ -36,4 +36,4 @@ var c1obj = new Vue({
 
 })
 
-module.exports = c1obj
+export default c1obj;

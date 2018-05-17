@@ -3,7 +3,7 @@
 * 请求模块
 */
 
-module.exports = function (opt) {
+export default function (opt) {
 	var options = {
 		url: opt.url,
 		dataType : opt.dataType || 'json',

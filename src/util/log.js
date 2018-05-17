@@ -3,9 +3,10 @@
  *
 * 日志类
 */
-console = window.console ? window.console : function(e){alert(e)};
-
-module.exports = {
+let noop = function () {}
+let console = window.console ? window.console : {log: noop, error: noop};
+let Log = {
 	log: console.log,
 	error: console.error
 };
+export default Log;

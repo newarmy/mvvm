@@ -5,8 +5,10 @@
  * commit 修改数据
  *
  **/
-var extend = require('./util/extend');
-var eventBase = require('./util/eventBase');
+import extend from './util/extend';
+import EventBase  from './util/eventBase';
+let eventBase = new EventBase();
+
 function FlowManager (opt) {
 	this.state = opt.state;
 	this.actions = opt.actions;
@@ -15,8 +17,8 @@ function FlowManager (opt) {
 }
 extend(FlowManager.prototype, eventBase, {
     _init: function () {
-    	var k = this;
-    	for(var key in k.state) {
+    	let k = this;
+    	for(let key in k.state) {
     		k._selfEvent[key] = key+'_event';
 			(function(k, key){
                 k.on(k._selfEvent[key], function(data) {
@@ -31,16 +33,16 @@ extend(FlowManager.prototype, eventBase, {
 	},
 	// 提交数据
 	commit: function(key, payload) {
-    	var k = this;
+    	let k = this;
     	k.trigger(k._selfEvent[key], payload);
 	},
 	// 触发行为
 	dispatch: function (action, payload) {
-    	var k = this;
+    	let k = this;
     	k.actions[action].call(k, payload)
 	}
 });
 
-module.exports = function (opt) {
+export default function (opt) {
 	return new FlowManager(opt)
 };

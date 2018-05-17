@@ -2,10 +2,10 @@
 /**
 * 继承工具方法
 */
-var extend = require('./extend');
-module.exports = function (protoProps, staticProps) {
-	var parent = this;
-	var child;
+import extend  from './extend';
+export default function (protoProps, staticProps) {
+	let parent = this;
+	let child;
 	if(protoProps && Object.prototype.hasOwnProperty.call(protoProps, 'constructor')) {
 		child = protoProps.prototype.constructor;
 	} else {

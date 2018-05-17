@@ -3,9 +3,9 @@
 * 拷贝属性
 */
 
-module.exports = function (obj) {
-	var length = arguments.length;
-	var that = this, target;
+export default function (obj) {
+	let length = arguments.length;
+	let that = this, target;
 	if(!obj) {
 		return null;
 	}
@@ -15,7 +15,7 @@ module.exports = function (obj) {
 	
 	for(var i = 1; i < length; i++) {
 		target = arguments[i];
-		for(var key in target) {
+		for(let key in target) {
 			//if(obj[key] === void 0) 
 			obj[key] = target[key];
 		}

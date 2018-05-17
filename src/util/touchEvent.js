@@ -1,9 +1,9 @@
   //touch事件相关
-	var isPointer = navigator.msPointerEnabled;
-	var start = "ontouchstart" in window ? "touchstart" : (isPointer ? "MSPointerDown" : "mousedown");
-	var move = "ontouchmove" in window ? "touchmove" : (isPointer ? "MSPointerMove" : "mousemove");
-	var end = "ontouchend" in window ? "touchend" : (isPointer ? "MSPointerUp" : "mouseup");
-	var cancel = "ontouchcancel" in window ? "touchcancel" : "MSPointerCancel";
+  let isPointer = navigator.msPointerEnabled;
+  let start = "ontouchstart" in window ? "touchstart" : (isPointer ? "MSPointerDown" : "mousedown");
+  let move = "ontouchmove" in window ? "touchmove" : (isPointer ? "MSPointerMove" : "mousemove");
+  let end = "ontouchend" in window ? "touchend" : (isPointer ? "MSPointerUp" : "mouseup");
+  let cancel = "ontouchcancel" in window ? "touchcancel" : "MSPointerCancel";
 	if(window.PointerEvent) {
 		start = "pointerdown";
 		move = "pointermove";
@@ -13,7 +13,7 @@
 		start = "MSPointerDown";
 		move = "MSPointerMove";
 		end = "MSPointerUp";
-	} 
+	}
 	function getPoint (e) {
 		if(e.originalEvent || e, "touchstart" == start) {
 			if(!e.touches[0]) {
@@ -27,7 +27,7 @@
 		}
 		return e;
 	}
-	module.exports =  {
+	export default {
 		touchStart: start,
 		touchMove : move,
 		touchEnd : end,
