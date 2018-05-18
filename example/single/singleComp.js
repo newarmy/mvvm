@@ -1,7 +1,7 @@
-var baseComp = require('../../src/newBaseComp.js');
-var tpl = require('./tpl.html');
+import BaseComp  from '../../src/componentFactory.js';
+import tpl  from './tpl.html';
 var dom = $('.box');
-var tabComp = new baseComp({
+var tabComp = new BaseComp({
     element: dom,
     isDev: true,
     //做一些组件初始化操作
@@ -28,7 +28,7 @@ var tabComp = new baseComp({
         }
     },
     template: tpl,
-    data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
+    //data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
 })
 
 //添加到dom中

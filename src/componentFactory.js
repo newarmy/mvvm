@@ -1,5 +1,9 @@
 
 import BaseVM from './newBaseComp';
+/**
+ * 创建组件
+ *
+ * */
 export default function VMFactory(opt) {
     var NewClass = BaseVM.extend({
         // 组件的初始函数

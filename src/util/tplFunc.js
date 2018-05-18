@@ -19,7 +19,7 @@ export default {
         	html = 'var str= \''+str+'\'; return str;';
         	return new Function('data', html);
 		}
-		html = ' var str=""; with(data) {';
+		html = ' var str = ""; var __count = 0; for(var key in data) {__count++;} if(__count === 0) {return str;} with(data) {';
 		for(let i = 0 ; i < l; i++) {
 			temp = startArr[i];
 			endArr = temp.split(this.endTag);

@@ -7,7 +7,7 @@ var path = require('path');
 module.exports ={
 	entry: {
 		tabMain: './example/single/singleComp.js',
-        cMain: './example/muiti/combinationMain.js',
+        cMain: './example/muiti/multiComp.js',
         rMain: './example/route/routeMain.js',
         lazyMain: './example/route/lazyRoute.js',
         hookMain: './example/route/routeHook.js',

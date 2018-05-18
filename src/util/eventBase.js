@@ -1,4 +1,5 @@
-//自定义事件机制
+// 自定义事件机制
+// 类的所有方法都是不可枚举的
 export default class EventBase {
 	constructor () {
 		this._events_ = {}

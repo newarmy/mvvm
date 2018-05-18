@@ -1,12 +1,15 @@
 {
-	"presets": ["env"],
+	"presets": [ ["env",  {"loose": true}]],
 	"plugins": [
 		["transform-runtime", {
 			"helpers": false,
 			"polyfill": true,
 			"regenerator": true,
-			"moduleName": "babel-runtime"
+			"moduleName": "babel-runtime",
+			"loose": true
 		}],
-		["syntax-dynamic-import"]
+		"syntax-dynamic-import",
+		"transform-es3-member-expression-literals",
+		"transform-es3-property-literals"
 	]
 }

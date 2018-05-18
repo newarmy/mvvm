@@ -2,10 +2,10 @@
 /**
 
 */
-var Vue = require('../../src/newBaseComp');
-var t2 = require('./combinationTemplate/child2.html');
+import Vue from '../../src/componentFactory';
+import t2  from './combinationTemplate/child2.html';
 
-var c2obj = new Vue({
+let c2obj = new Vue({
     template: t2,
     isDev: true,
     events: {
@@ -18,4 +18,4 @@ var c2obj = new Vue({
     }
 })
 
-module.exports = c2obj
+export default c2obj;

@@ -5,80 +5,78 @@
 			   就通知所有公用这个状态的组件（通过事件通知）。
 			3. 公用这个状态的组件根据接收到的数据，触发相应的行为
 */
-import extend from './util/extend';
-import extendClass from './util/extendClass';
+
 import EventBase  from './util/eventBase';
 
+export default class StateBus extends EventBase {
 
-let eventBase = new EventBase();
-
-function stateBus(opt) {
-	this.states = opt.states;// {'state': 'statename'}, 状态名
-	this.parentBus = opt.parentBus || null;
-	//对象的唯一标示
-	this.classId = (new Date()).getTime()+"_class_"+Math.random();
-	this.init();
-}
-extend(stateBus.prototype, eventBase, {
-	init: function () {
-		let k = this;
-		for(let key in k.states) {
-			this.register(k.states[key]);
-		}
-		if(k.parentBus) {
-			k.handlerParentBus();
-		}
-	},
-	setParentBus: function(pbus) {
-		let k =this;
-		k.parentBus = pbus;
-		k.handlerParentBus();
-	},
-	//注册状态
-	register: function (state) {
-		let k = this;
-		k._addListener(state);
-	},
-	//内部使用，中转事件
-	_addListener: function(state) {
-		let k = this;
-		k.on(state+"_change", function(opt) {
-			let targetClassId = (opt && opt.classId) ? opt.classId : k.classId;
-			let newOpt = {
-				type: state,
-				classId: targetClassId//标示哪个state对象触发的事件
-			};
-			if(opt && opt.payload) {
-                newOpt.payload = opt.payload;
-			}
-			k.trigger(newOpt.type, newOpt);
-
-			if(k.parentBus && k.parentBus.states[newOpt.type]) {
-				k.parentBus.dispatch(newOpt.type,  newOpt);
-			}
-		}, k);
-	},
-	//触发事件,
-	dispatch: function(state, opt) {
-		let k = this;
-		k.trigger(state+'_change', opt);
-	},
-	//处理全局公共state（state中父状态对象传回到子状态对象的处理）
-	handlerParentBus: function() {
-		let k = this;
-		for(let key in k.parentBus.states) {
-			if(k.states[key]) {
-				(function(k, key) {
-					k.parentBus.on(key, function(opt) {
-						if(opt.classId === k.classId) {
-							return;
-						}
-						k.trigger(key, opt);
-					}); 
-				})(k, key);
-			}
-		}
+	constructor () {
+		super();
+        this.states = opt.states;// {'state': 'statename'}, 状态名
+        this.parentBus = opt.parentBus || null;
+        //对象的唯一标示
+        this.classId = (new Date()).getTime()+"_class_"+Math.random();
+        this.init();
 	}
-});
-stateBus.extend = extendClass;
-export default stateBus;
+
+    init () {
+        let k = this;
+        for(let key in k.states) {
+            this.register(k.states[key]);
+        }
+        if(k.parentBus) {
+            k.handlerParentBus();
+        }
+    }
+    setParentBus (pbus) {
+        let k =this;
+        k.parentBus = pbus;
+        k.handlerParentBus();
+    }
+    //注册状态
+    register (state) {
+        let k = this;
+        k._addListener(state);
+    }
+    //内部使用，中转事件
+    _addListener (state) {
+        let k = this;
+        k.on(state+"_change", function(opt) {
+            let targetClassId = (opt && opt.classId) ? opt.classId : k.classId;
+            let newOpt = {
+                type: state,
+                classId: targetClassId//标示哪个state对象触发的事件
+            };
+            if(opt && opt.payload) {
+                newOpt.payload = opt.payload;
+            }
+            k.trigger(newOpt.type, newOpt);
+
+            if(k.parentBus && k.parentBus.states[newOpt.type]) {
+                k.parentBus.dispatch(newOpt.type,  newOpt);
+            }
+        }, k);
+    }
+    //触发事件,
+    dispatch (state, opt) {
+        let k = this;
+        k.trigger(state+'_change', opt);
+    }
+    //处理全局公共state（state中父状态对象传回到子状态对象的处理）
+    handlerParentBus () {
+        let k = this;
+        for(let key in k.parentBus.states) {
+            if(k.states[key]) {
+                (function(k, key) {
+                    k.parentBus.on(key, function(opt) {
+                        if(opt.classId === k.classId) {
+                            return;
+                        }
+                        k.trigger(key, opt);
+                    });
+                })(k, key);
+            }
+        }
+    }
+}
+

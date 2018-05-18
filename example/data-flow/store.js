@@ -1,9 +1,9 @@
 //vm类, 
 
-var Flow = require('../../src/FlowManager');
-var ajax = require('./api');
+import Flow from '../../src/FlowManager';
+import ajax from './api';
 //数据流控制类
-var flow = Flow({
+var flow = new Flow({
     state: {
         tab1: {},
         tab2: {}
@@ -26,5 +26,5 @@ var flow = Flow({
     }
 });
 
-module.exports = flow;
+export default flow;
 

@@ -119,7 +119,7 @@ export default class BaseVM extends EventBase {
             for(let method in k.methods) {
                 k[method] = bind(k.methods[method], k);
             }
-           k.methods = null;
+           //k.methods = null;
         }
     }
     _bindData () {

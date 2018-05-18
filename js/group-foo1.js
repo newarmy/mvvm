@@ -1,0 +1,9 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([["group-foo1"],{"./example/route/child3.js":
+/*!*********************************!*\
+  !*** ./example/route/child3.js ***!
+  \*********************************/
+/*! no static exports found */function(module,exports,__webpack_require__){"use strict";eval("\n\nexports.__esModule = true;\n\nvar _componentFactory = __webpack_require__(/*! ../../src/componentFactory */ \"./src/componentFactory.js\");\n\nvar _componentFactory2 = _interopRequireDefault(_componentFactory);\n\nvar _child = __webpack_require__(/*! ./combinationTemplate/child3.html */ \"./example/route/combinationTemplate/child3.html\");\n\nvar _child2 = _interopRequireDefault(_child);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }\n\n//vm类, \n/**\r\n\r\n*/\nvar c2obj = new _componentFactory2['default']({\n    element: $('.box1'),\n    template: _child2['default'],\n    isDev: true,\n    events: {\n        'click': 'show'\n    },\n    methods: {\n        show: function show(e) {\n            alert(e.target.innerHTML);\n        }\n    }\n});\n\nexports['default'] = c2obj;\n\n//# sourceURL=webpack:///./example/route/child3.js?")},"./example/route/combinationTemplate/child3.html":
+/*!*******************************************************!*\
+  !*** ./example/route/combinationTemplate/child3.html ***!
+  \*******************************************************/
+/*! no static exports found */function(module,exports){eval('module.exports = "<div class=\\"d\\">\\r\\n    登录\\r\\n</div>"\n\n//# sourceURL=webpack:///./example/route/combinationTemplate/child3.html?')}}]);

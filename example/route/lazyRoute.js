@@ -20,6 +20,6 @@ var asyncTable = {
     }
 }
 var spa = new SPA({
-    table:asyncTable
+    table: asyncTable
 });
 

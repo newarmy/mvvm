@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "es6": "./node_modules/.bin/webpack --config ./webpack.es6.js --progress"
+    "dev": "./node_modules/.bin/webpack  --config ./webpack.es6.dev.js --progress ",
+    "prod": "./node_modules/.bin/webpack  --config ./webpack.es6.prod.js --progress "
   },
   "author": "dxj",
   "license": "ISC",
@@ -13,15 +14,17 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-es3-member-expression-literals": "^6.22.0",
+    "babel-plugin-transform-es3-property-literals": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "css-loader": "^0.26.1",
     "extract-text-webpack-plugin": "^2.0.0-rc.3",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.1",
-    "uglifyjs-webpack-plugin": "^0.2.1",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "url-loader": "^0.5.7",
-    "webpack": "^2.7.0",
+    "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3",
     "webpack-dev-server": "^2.4.1"
   },

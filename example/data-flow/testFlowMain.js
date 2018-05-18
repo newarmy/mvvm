@@ -1,9 +1,9 @@
 
-var Vue = require('../../src/newBaseComp');
-var t1 = require('./flowTemplate/child1.html');
-var t2 = require('./flowTemplate/child2.html');
-var tp = require('./flowTemplate/parent.html');
-var store = require('./store');
+import Vue from '../../src/componentFactory';
+import t1 from './flowTemplate/child1.html';
+import t2 from './flowTemplate/child2.html';
+import tp from './flowTemplate/parent.html';
+import store from './store';
 
 // 子组件1
 var c1obj = new Vue({

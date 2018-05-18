@@ -5,4 +5,4 @@ var ajax = function (data, cb) {
     }, 1000)
 }
 
-module.exports = ajax;
+export default ajax;
