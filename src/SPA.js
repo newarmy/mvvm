@@ -31,8 +31,8 @@ export default  class SPA {
             // 异步组件
             if(typeof Comp === 'function') {
                 Comp().then(function(module) {
-                    k.routeTable[path]= module;
-                    module.mounted();
+                    k.routeTable[path]= module.default;
+                    module.default.mounted();
                 });
             } else {
                 Comp.mounted(param);

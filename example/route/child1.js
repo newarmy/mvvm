@@ -2,7 +2,7 @@
 /**
 
 */
-import Vue from  '../../src/componentFactory';
+import Vue from  '../../src/componentFactoryForRoute';
 import t1 from './combinationTemplate/child1.html';
 import tg from './combinationTemplate/gson.html';
 

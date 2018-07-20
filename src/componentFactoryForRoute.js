@@ -9,7 +9,7 @@ export default function VMFactory(opt) {
         // 组件的初始函数
         init: opt.init,
     });
-    console.dir(NewClass);
+    //console.dir(NewClass);
     let newCompOBJ = new NewClass({
         // 事件的回调函数 和 一些常规函数 （会代理到组件实例中）
         methods: opt.methods,
@@ -32,10 +32,5 @@ export default function VMFactory(opt) {
         // 调试用的标志位
         isDev: opt.isDev
     });
-    let type = typeof opt.template;
-    //如果有模板参数和容器Dom（即根组件），执行mounted
-    if((type === 'object' || type === 'string') && opt.element) {
-        newCompOBJ.mounted();
-    }
     return newCompOBJ;
 }

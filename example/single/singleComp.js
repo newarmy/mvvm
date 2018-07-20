@@ -31,5 +31,3 @@ var tabComp = new BaseComp({
     //data: {arr: [{head: 'test1',content: 'test content1'}, {head: 'test2',content: 'test content2'}]}
 })
 
-//添加到dom中
-tabComp.mounted()

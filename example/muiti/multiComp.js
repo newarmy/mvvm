@@ -36,5 +36,3 @@ var pobj = new Vue({
         }
     }
 })
-
-pobj.mounted();

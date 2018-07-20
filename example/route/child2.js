@@ -2,7 +2,7 @@
 /**
 
 */
-import Vue from  '../../src/componentFactory';
+import Vue from  '../../src/componentFactoryForRoute';
 import t2 from './combinationTemplate/child2.html';
 
 var c2obj = new Vue({
